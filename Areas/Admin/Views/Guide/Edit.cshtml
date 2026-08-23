@@ -1,0 +1,25 @@
+@model GuideFormViewModel
+@{ ViewData["Title"] = "Sửa HDV"; }
+<h3>Sửa hướng dẫn viên</h3>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-6 mb-3"><label class="form-label">Họ tên</label><input asp-for="FullName" class="form-control" /></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Ngày sinh</label><input asp-for="DateOfBirth" type="date" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">SĐT</label><input asp-for="Phone" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Email</label><input asp-for="Email" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Năm KN</label><input asp-for="ExperienceYears" type="number" class="form-control" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Địa chỉ</label><input asp-for="Address" class="form-control" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Ngôn ngữ</label><input asp-for="Languages" class="form-control" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Tiểu sử</label><textarea asp-for="Bio" class="form-control" rows="3"></textarea></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Trạng thái</label>
+                    <select asp-for="Status" class="form-select"><option value="1">Active</option><option value="2">Inactive</option></select></div>
+            </div>
+            <button class="btn btn-primary">Lưu</button>
+            <a href="/Admin/Guide" class="btn btn-link">Hủy</a>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,50 @@
+@model PagedResult<Booking>
+@using TourManagement.Web.Models.Enums
+@{ ViewData["Title"] = "Quản lý booking"; }
+<h3>Danh sách đơn đặt tour</h3>
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-3"><input type="text" name="keyword" placeholder="Mã đơn, tên..." class="form-control form-control-sm" value="@Context.Request.Query["keyword"]" /></div>
+        <div class="col-md-2">
+            <select name="status" class="form-select form-select-sm">
+                <option value="">Tất cả trạng thái</option>
+                <option value="1" selected="@(Context.Request.Query["status"]=="1")">PENDING</option>
+                <option value="2" selected="@(Context.Request.Query["status"]=="2")">CONFIRMED</option>
+                <option value="3" selected="@(Context.Request.Query["status"]=="3")">PAID</option>
+                <option value="4" selected="@(Context.Request.Query["status"]=="4")">CANCELLED</option>
+                <option value="5" selected="@(Context.Request.Query["status"]=="5")">COMPLETED</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="paymentStatus" class="form-select form-select-sm">
+                <option value="">Thanh toán</option>
+                <option value="1" selected="@(Context.Request.Query["paymentStatus"]=="1")">UNPAID</option>
+                <option value="2" selected="@(Context.Request.Query["paymentStatus"]=="2")">PARTIAL_PAID</option>
+                <option value="3" selected="@(Context.Request.Query["paymentStatus"]=="3")">PAID</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button class="btn btn-primary btn-sm">Lọc</button></div>
+    </div>
+</form>
+
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Mã đơn</th><th>Khách</th><th>Tour</th><th>Khởi hành</th><th>Tổng tiền</th><th>Trạng thái</th><th>Thanh toán</th><th>Ngày đặt</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var b in Model.Items)
+        {
+            <tr>
+                <td><strong>@b.BookingCode</strong></td>
+                <td>@b.User?.FullName</td>
+                <td>@b.Schedule?.Tour?.Name</td>
+                <td>@b.Schedule?.StartDate.ToString("dd/MM/yyyy")</td>
+                <td>@b.TotalAmount.ToString("N0") đ</td>
+                <td><span class="badge @EnumHelper.GetBadgeClass(b.Status, typeof(BookingStatus))">@EnumHelper.GetBookingStatusName(b.Status)</span></td>
+                <td><span class="badge @EnumHelper.GetBadgeClass(b.PaymentStatus, typeof(PaymentStatus))">@EnumHelper.GetPaymentStatusName(b.PaymentStatus)</span></td>
+                <td>@b.BookedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                <td><a href="/Admin/Booking/Details/@b.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,51 @@
+@model PagedResult<ApplicationUser>
+@{ ViewData["Title"] = "Khách hàng"; var kw = ViewBag.Keyword as string; var status = ViewBag.Status as int?; }
+<h3>Khách hàng</h3>
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-4"><input type="text" name="keyword" value="@kw" placeholder="Tên, email, SĐT..." class="form-control form-control-sm" /></div>
+        <div class="col-md-3">
+            <select name="status" class="form-select form-select-sm">
+                <option value="">Tất cả</option>
+                <option value="1" selected="@(status==1)">Active</option>
+                <option value="2" selected="@(status==2)">Locked</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button class="btn btn-primary btn-sm">Lọc</button></div>
+    </div>
+</form>
+
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Ngày tạo</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var u in Model.Items)
+        {
+            <tr>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>@u.PhoneNumber</td>
+                <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
+                <td>@(u.Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Locked</span>")</td>
+                <td>
+                    <a href="/Admin/Customer/Details/@u.Id" class="btn btn-sm btn-outline-info"><i class="bi bi-eye"></i></a>
+                    @if (u.Status == 1)
+                    {
+                        <form asp-action="Lock" asp-route-id="@u.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-outline-warning"><i class="bi bi-lock"></i></button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Unlock" asp-route-id="@u.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-outline-success"><i class="bi bi-unlock"></i></button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

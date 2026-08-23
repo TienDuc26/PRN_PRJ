@@ -1,0 +1,196 @@
+@using TourManagement.Web.Models.Entities
+@{
+    ViewData["Title"] = "Trang chủ - Khám phá Việt Nam";
+    var destinations = ViewBag.Destinations as List<Destination> ?? new List<Destination>();
+    var tours = ViewBag.Tours as List<Tour> ?? new List<Tour>();
+}
+
+<!-- HERO -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-3 fw-bold mb-3">Khám phá Việt Nam cùng <span class="text-warning">TourViet</span></h1>
+        <p class="lead mb-4 fs-4">Hàng nghìn tour du lịch hấp dẫn - Giá tốt nhất thị trường - Hỗ trợ 24/7</p>
+        <form action="/Tour" method="get" class="search-box mx-auto" style="max-width: 720px">
+            <div class="input-group input-group-lg shadow-lg">
+                <span class="input-group-text bg-white border-0"><i class="bi bi-search text-primary"></i></span>
+                <input name="keyword" type="text" class="form-control border-0" placeholder="Bạn muốn đi đâu? (Hạ Long, Đà Nẵng, Phú Quốc...)">
+                <button class="btn btn-warning fw-bold px-4" type="submit">Tìm tour</button>
+            </div>
+        </form>
+        <div class="mt-4">
+            <span class="badge bg-light text-dark me-2 p-2">Tour hot mùa hè</span>
+            <span class="badge bg-light text-dark me-2 p-2">Giảm giá đến 30%</span>
+            <span class="badge bg-light text-dark p-2">Miễn phí hủy 24h</span>
+        </div>
+    </div>
+</section>
+
+<!-- SEARCH BY CATEGORY -->
+<section class="container my-5">
+    <h2 class="section-title center">Khám phá theo phong cách</h2>
+    <div class="row text-center g-4 mt-2">
+        <div class="col-md-2 col-4">
+            <a href="/Tour?type=1" class="category-tile">
+                <span class="cat-icon"><i class="bi bi-tree-fill"></i></span>
+                <strong>Sinh thái</strong>
+            </a>
+        </div>
+        <div class="col-md-2 col-4">
+            <a href="/Tour?type=2" class="category-tile">
+                <span class="cat-icon"><i class="bi bi-camera-fill"></i></span>
+                <strong>Văn hóa</strong>
+            </a>
+        </div>
+        <div class="col-md-2 col-4">
+            <a href="/Tour?type=3" class="category-tile">
+                <span class="cat-icon"><i class="bi bi-cup-hot-fill"></i></span>
+                <strong>Ẩm thực</strong>
+            </a>
+        </div>
+        <div class="col-md-2 col-4">
+            <a href="/Tour?type=4" class="category-tile">
+                <span class="cat-icon"><i class="bi bi-people-fill"></i></span>
+                <strong>Gia đình</strong>
+            </a>
+        </div>
+        <div class="col-md-2 col-4">
+            <a href="/Tour?type=5" class="category-tile">
+                <span class="cat-icon"><i class="bi bi-heart-fill"></i></span>
+                <strong>Honey moon</strong>
+            </a>
+        </div>
+        <div class="col-md-2 col-4">
+            <a href="/Tour" class="category-tile">
+                <span class="cat-icon"><i class="bi bi-grid-fill"></i></span>
+                <strong>Tất cả</strong>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- DESTINATIONS -->
+<section class="container my-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <h2 class="section-title m-0">Điểm đến nổi bật</h2>
+        <a href="/Tour" class="btn btn-link text-primary fw-bold">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row">
+        @if (destinations.Any())
+        {
+            @foreach (var d in destinations.Take(6))
+            {
+                <div class="col-md-4 col-sm-6 mb-3">
+                    <a href="/Tour/ByDestination/@d.Id" class="destination-card" style="background-image:url('@(d.Image ?? "https://images.unsplash.com/photo-1528127269322-539801943592?w=600")')">
+                        <h4 class="mb-1 fw-bold">@d.Name</h4>
+                        <p class="mb-0 small"><i class="bi bi-geo-alt-fill"></i> @d.City, @d.Country</p>
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="bi bi-geo-alt"></i>
+                    <h4>Chưa có điểm đến nào</h4>
+                    <p>Vui lòng quay lại sau.</p>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- FEATURED TOURS -->
+<section class="container my-5">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h2 class="section-title m-0">Tour nổi bật</h2>
+            <p class="text-muted mb-0">Những tour được yêu thích nhất hiện tại</p>
+        </div>
+        <a href="/Tour" class="btn btn-outline-primary">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row">
+        @if (tours.Any())
+        {
+            @foreach (var t in tours.Take(8))
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card tour-card h-100">
+                        <div class="position-relative">
+                            <img src="@(t.Thumbnail ?? "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=500")" class="card-img-top" alt="@t.Name">
+                            @if (t.BasePrice >= 5000000)
+                            {
+                                <span class="badge-discount"><i class="bi bi-fire"></i> HOT</span>
+                            }
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <span class="badge bg-primary-subtle text-primary mb-2 align-self-start">
+                                <i class="bi bi-geo-alt-fill"></i> @(t.Destination?.Name ?? "Việt Nam")
+                            </span>
+                            <h6 class="card-title fw-bold">@t.Name</h6>
+                            <p class="text-muted small mb-2">
+                                <i class="bi bi-clock"></i> @t.DurationDays ngày @t.DurationNights đêm
+                            </p>
+                            <div class="rating mb-2 small">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-half"></i>
+                                <span class="text-muted ms-1">(4.5)</span>
+                            </div>
+                            <div class="mt-auto d-flex justify-content-between align-items-end">
+                                <div>
+                                    <div class="price">@t.BasePrice.ToString("N0") đ</div>
+                                    <small class="text-muted">/ khách</small>
+                                </div>
+                                <a href="/Tour/Details/@t.Id" class="btn btn-sm btn-primary">
+                                    Đặt ngay <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="bi bi-emoji-frown"></i>
+                    <h4>Chưa có tour nào</h4>
+                    <p>Hệ thống đang cập nhật tour mới. Vui lòng quay lại sau!</p>
+                    <a href="/Tour" class="btn btn-primary mt-2">Khám phá tour</a>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<style>
+.category-tile {
+    display: block; text-align: center;
+    padding: 20px 10px;
+    background: white; border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+    color: var(--dark);
+    transition: all .25s;
+    text-decoration: none;
+}
+.category-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    color: var(--primary);
+}
+.cat-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border-radius: 50%;
+    color: white; font-size: 1.6rem;
+    margin-bottom: 10px;
+}
+.category-tile strong { display: block; }
+.search-box { margin-top: 32px; }
+.bg-primary-subtle { background-color: rgba(10,92,179,0.1) !important; }
+</style>

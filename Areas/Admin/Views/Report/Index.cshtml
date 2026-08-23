@@ -1,0 +1,79 @@
+@model ReportFilterViewModel
+@using TourManagement.Web.Models.Enums
+@{
+    ViewData["Title"] = "Báo cáo";
+    var revenue = ViewBag.RevenueReport as List<RevenueReportItem> ?? new();
+    var tourReport = ViewBag.TourReport as List<TourReportItem> ?? new();
+    var total = (decimal)(ViewBag.TotalRevenue ?? 0m);
+    var totalB = (int)(ViewBag.TotalBookings ?? 0);
+}
+
+<h3>Báo cáo thống kê</h3>
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-3"><label class="form-label small">Từ ngày</label><input type="date" name="fromDate" value="@Model.FromDate?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" /></div>
+        <div class="col-md-3"><label class="form-label small">Đến ngày</label><input type="date" name="toDate" value="@Model.ToDate?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" /></div>
+        <div class="col-md-2"><label class="form-label small">Nhóm theo</label>
+            <select name="groupBy" class="form-select form-select-sm">
+                <option value="day" selected="@(Model.GroupBy=="day")">Ngày</option>
+                <option value="month" selected="@(Model.GroupBy=="month")">Tháng</option>
+            </select></div>
+        <div class="col-md-2 align-self-end"><button class="btn btn-primary btn-sm w-100">Xem</button></div>
+        <div class="col-md-2 align-self-end"><a href="/Admin/Report/ExportRevenue?fromDate=@Model.FromDate&toDate=@Model.ToDate" class="btn btn-success btn-sm w-100"><i class="bi bi-download"></i> CSV</a></div>
+    </div>
+</form>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <div class="stat-card">
+            <div class="text-muted small">Tổng doanh thu</div>
+            <div class="stat-value text-success">@total.ToString("N0") đ</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="stat-card">
+            <div class="text-muted small">Tổng booking</div>
+            <div class="stat-value text-primary">@totalB</div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-header bg-white"><h5>Doanh thu theo thời gian</h5></div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Kỳ</th><th>Bookings</th><th>Doanh thu</th></tr></thead>
+            <tbody>
+            @foreach (var r in revenue)
+            {
+                <tr><td>@r.Label</td><td>@r.BookingCount</td><td>@r.Revenue.ToString("N0") đ</td></tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white"><h5>Báo cáo tour</h5></div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Mã</th><th>Tour</th><th>Bookings</th><th>Khách</th><th>Doanh thu</th><th>Tỷ lệ lấp đầy</th></tr></thead>
+            <tbody>
+            @foreach (var t in tourReport)
+            {
+                <tr>
+                    <td><code>@t.TourCode</code></td>
+                    <td>@t.TourName</td>
+                    <td>@t.BookingCount</td>
+                    <td>@t.GuestCount</td>
+                    <td>@t.Revenue.ToString("N0") đ</td>
+                    <td>
+                        <div class="progress" style="height:8px"><div class="progress-bar" style="width:@t.FillRate%"></div></div>
+                        <small>@t.FillRate% (@t.BookedSeats/@t.TotalSeats)</small>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

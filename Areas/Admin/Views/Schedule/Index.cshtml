@@ -1,0 +1,63 @@
+@model PagedResult<TourSchedule>
+@using TourManagement.Web.Models.Enums
+@{ ViewData["Title"] = "Lịch khởi hành"; var tours = ViewBag.Tours as PagedResult<Tour>; }
+<div class="d-flex justify-content-between mb-3">
+    <h3>Lịch khởi hành</h3>
+    <a href="/Admin/Schedule/Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Thêm lịch</a>
+</div>
+
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-3">
+            <select name="tourId" class="form-select form-select-sm">
+                <option value="">Tất cả tour</option>
+                @if (tours != null)
+                    @foreach (var t in tours.Items)
+                    {
+                        <option value="@t.Id" selected="@(Context.Request.Query["tourId"] == t.Id.ToString())">@t.Name</option>
+                    }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="status" class="form-select form-select-sm">
+                <option value="">Tất cả</option>
+                <option value="1" selected="@(Context.Request.Query["status"]=="1")">OPEN</option>
+                <option value="2" selected="@(Context.Request.Query["status"]=="2")">FULL</option>
+                <option value="3" selected="@(Context.Request.Query["status"]=="3")">CLOSED</option>
+                <option value="4" selected="@(Context.Request.Query["status"]=="4")">CANCELLED</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button class="btn btn-primary btn-sm">Lọc</button></div>
+    </div>
+</form>
+
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Mã</th><th>Tour</th><th>Khởi hành</th><th>Kết thúc</th><th>Ghế</th><th>Giá</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var s in Model.Items)
+        {
+            <tr>
+                <td><code>@s.Code</code></td>
+                <td>@s.Tour?.Name</td>
+                <td>@s.StartDate.ToString("dd/MM/yyyy")</td>
+                <td>@s.EndDate.ToString("dd/MM/yyyy")</td>
+                <td>@s.BookedGuests / @s.MaxGuests</td>
+                <td>@s.Price.ToString("N0") đ</td>
+                <td><span class="badge @EnumHelper.GetBadgeClass(s.Status, typeof(ScheduleStatus))">@EnumHelper.GetScheduleStatusName(s.Status)</span></td>
+                <td>
+                    <a href="/Admin/Schedule/Edit/@s.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                    <form asp-action="Close" asp-route-id="@s.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-warning"><i class="bi bi-x-circle"></i> Đóng</button>
+                    </form>
+                    <form asp-action="Cancel" asp-route-id="@s.Id" method="post" class="d-inline" onsubmit="return confirm('Hủy lịch này?')">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-slash-circle"></i> Hủy</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

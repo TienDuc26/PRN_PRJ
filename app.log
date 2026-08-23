@@ -1,0 +1,469 @@
+Using launch settings from C:\Users\Admin\Desktop\ASM1\PRJ_PRN222\PRN222-PROJECT\Properties\launchSettings.json...
+Building...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (10ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT OBJECT_ID(N'[__EFMigrationsHistory]');
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [MigrationId], [ProductVersion]
+      FROM [__EFMigrationsHistory]
+      ORDER BY [MigrationId];
+info: Microsoft.EntityFrameworkCore.Migrations[20405]
+      No migrations were applied. The database is already up to date.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (26ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [u].[Id], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status], [u].[TwoFactorEnabled], [u].[UpdatedAt], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[NormalizedEmail] = @__normalizedEmail_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [u].[Id], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status], [u].[TwoFactorEnabled], [u].[UpdatedAt], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[NormalizedEmail] = @__normalizedEmail_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [u].[Id], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status], [u].[TwoFactorEnabled], [u].[UpdatedAt], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[NormalizedEmail] = @__normalizedEmail_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Destinations] AS [d]) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Tours] AS [t]) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Guides] AS [g]) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT CASE
+          WHEN EXISTS (
+              SELECT 1
+              FROM [Promotions] AS [p]) THEN CAST(1 AS bit)
+          ELSE CAST(0 AS bit)
+      END
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\Users\Admin\Desktop\ASM1\PRJ_PRN222\PRN222-PROJECT
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]
+      Failed to determine the https port for redirect.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (8ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM [Destinations] AS [d]
+      ORDER BY [d].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__f_Status_Value_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Tours] AS [t]
+      WHERE [t].[Status] = @__f_Status_Value_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@__f_Status_Value_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32), @__p_2='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t0].[Id], [t0].[BasePrice], [t0].[Code], [t0].[CreatedAt], [t0].[Description], [t0].[DestinationId], [t0].[DurationDays], [t0].[DurationNights], [t0].[ExcludedServices], [t0].[IncludedServices], [t0].[Name], [t0].[Policy], [t0].[RowVersion], [t0].[Status], [t0].[Thumbnail], [t0].[TourType], [t0].[UpdatedAt], [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM (
+          SELECT [t].[Id], [t].[BasePrice], [t].[Code], [t].[CreatedAt], [t].[Description], [t].[DestinationId], [t].[DurationDays], [t].[DurationNights], [t].[ExcludedServices], [t].[IncludedServices], [t].[Name], [t].[Policy], [t].[RowVersion], [t].[Status], [t].[Thumbnail], [t].[TourType], [t].[UpdatedAt]
+          FROM [Tours] AS [t]
+          WHERE [t].[Status] = @__f_Status_Value_0
+          ORDER BY [t].[CreatedAt] DESC
+          OFFSET @__p_1 ROWS FETCH NEXT @__p_2 ROWS ONLY
+      ) AS [t0]
+      INNER JOIN [Destinations] AS [d] ON [t0].[DestinationId] = [d].[Id]
+      ORDER BY [t0].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM [Destinations] AS [d]
+      ORDER BY [d].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__f_Status_Value_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Tours] AS [t]
+      WHERE [t].[Status] = @__f_Status_Value_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__f_Status_Value_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32), @__p_2='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t0].[Id], [t0].[BasePrice], [t0].[Code], [t0].[CreatedAt], [t0].[Description], [t0].[DestinationId], [t0].[DurationDays], [t0].[DurationNights], [t0].[ExcludedServices], [t0].[IncludedServices], [t0].[Name], [t0].[Policy], [t0].[RowVersion], [t0].[Status], [t0].[Thumbnail], [t0].[TourType], [t0].[UpdatedAt], [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM (
+          SELECT [t].[Id], [t].[BasePrice], [t].[Code], [t].[CreatedAt], [t].[Description], [t].[DestinationId], [t].[DurationDays], [t].[DurationNights], [t].[ExcludedServices], [t].[IncludedServices], [t].[Name], [t].[Policy], [t].[RowVersion], [t].[Status], [t].[Thumbnail], [t].[TourType], [t].[UpdatedAt]
+          FROM [Tours] AS [t]
+          WHERE [t].[Status] = @__f_Status_Value_0
+          ORDER BY [t].[CreatedAt] DESC
+          OFFSET @__p_1 ROWS FETCH NEXT @__p_2 ROWS ONLY
+      ) AS [t0]
+      INNER JOIN [Destinations] AS [d] ON [t0].[DestinationId] = [d].[Id]
+      ORDER BY [t0].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM [Destinations] AS [d]
+      ORDER BY [d].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM [Destinations] AS [d]
+      ORDER BY [d].[Name]
+warn: Microsoft.EntityFrameworkCore.Query[20504]
+      Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t0].[Id], [t0].[BasePrice], [t0].[Code], [t0].[CreatedAt], [t0].[Description], [t0].[DestinationId], [t0].[DurationDays], [t0].[DurationNights], [t0].[ExcludedServices], [t0].[IncludedServices], [t0].[Name], [t0].[Policy], [t0].[RowVersion], [t0].[Status], [t0].[Thumbnail], [t0].[TourType], [t0].[UpdatedAt], [t0].[Id0], [t0].[City], [t0].[Country], [t0].[CreatedAt0], [t0].[Description0], [t0].[Image], [t0].[Name0], [t0].[Status0], [t0].[UpdatedAt0], [t1].[Id], [t1].[DayNumber], [t1].[Description], [t1].[Hotel], [t1].[Image], [t1].[Location], [t1].[Meals], [t1].[Notes], [t1].[TimeInfo], [t1].[Title], [t1].[TourId], [t2].[Id], [t2].[BookedGuests], [t2].[Code], [t2].[CreatedAt], [t2].[EndDate], [t2].[MaxGuests], [t2].[MeetingPoint], [t2].[MeetingTime], [t2].[Price], [t2].[RowVersion], [t2].[StartDate], [t2].[Status], [t2].[TourId], [t2].[UpdatedAt], [t4].[Id], [t4].[BookingId], [t4].[Content], [t4].[CreatedAt], [t4].[Image], [t4].[Rating], [t4].[Status], [t4].[TourId], [t4].[UserId]
+      FROM (
+          SELECT TOP(1) [t].[Id], [t].[BasePrice], [t].[Code], [t].[CreatedAt], [t].[Description], [t].[DestinationId], [t].[DurationDays], [t].[DurationNights], [t].[ExcludedServices], [t].[IncludedServices], [t].[Name], [t].[Policy], [t].[RowVersion], [t].[Status], [t].[Thumbnail], [t].[TourType], [t].[UpdatedAt], [d].[Id] AS [Id0], [d].[City], [d].[Country], [d].[CreatedAt] AS [CreatedAt0], [d].[Description] AS [Description0], [d].[Image], [d].[Name] AS [Name0], [d].[Status] AS [Status0], [d].[UpdatedAt] AS [UpdatedAt0]
+          FROM [Tours] AS [t]
+          INNER JOIN [Destinations] AS [d] ON [t].[DestinationId] = [d].[Id]
+          WHERE [t].[Id] = @__id_0
+      ) AS [t0]
+      LEFT JOIN [TourItineraries] AS [t1] ON [t0].[Id] = [t1].[TourId]
+      LEFT JOIN (
+          SELECT [t3].[Id], [t3].[BookedGuests], [t3].[Code], [t3].[CreatedAt], [t3].[EndDate], [t3].[MaxGuests], [t3].[MeetingPoint], [t3].[MeetingTime], [t3].[Price], [t3].[RowVersion], [t3].[StartDate], [t3].[Status], [t3].[TourId], [t3].[UpdatedAt]
+          FROM [TourSchedules] AS [t3]
+          WHERE [t3].[StartDate] >= CONVERT(date, GETUTCDATE())
+      ) AS [t2] ON [t0].[Id] = [t2].[TourId]
+      LEFT JOIN (
+          SELECT [r].[Id], [r].[BookingId], [r].[Content], [r].[CreatedAt], [r].[Image], [r].[Rating], [r].[Status], [r].[TourId], [r].[UserId]
+          FROM [Reviews] AS [r]
+          WHERE [r].[Status] = 1
+      ) AS [t4] ON [t0].[Id] = [t4].[TourId]
+      ORDER BY [t0].[Id], [t0].[Id0], [t1].[DayNumber], [t1].[Id], [t2].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__tourId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[BookedGuests], [t].[Code], [t].[CreatedAt], [t].[EndDate], [t].[MaxGuests], [t].[MeetingPoint], [t].[MeetingTime], [t].[Price], [t].[RowVersion], [t].[StartDate], [t].[Status], [t].[TourId], [t].[UpdatedAt]
+      FROM [TourSchedules] AS [t]
+      WHERE [t].[TourId] = @__tourId_0
+      ORDER BY [t].[StartDate]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__tourId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Reviews] AS [r]
+      WHERE [r].[TourId] = @__tourId_0 AND [r].[Status] = 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__tourId_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32), @__p_2='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[BookingId], [t].[Content], [t].[CreatedAt], [t].[Image], [t].[Rating], [t].[Status], [t].[TourId], [t].[UserId], [u].[Id], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status], [u].[TwoFactorEnabled], [u].[UpdatedAt], [u].[UserName]
+      FROM (
+          SELECT [r].[Id], [r].[BookingId], [r].[Content], [r].[CreatedAt], [r].[Image], [r].[Rating], [r].[Status], [r].[TourId], [r].[UserId]
+          FROM [Reviews] AS [r]
+          WHERE [r].[TourId] = @__tourId_0 AND [r].[Status] = 1
+          ORDER BY [r].[CreatedAt] DESC
+          OFFSET @__p_1 ROWS FETCH NEXT @__p_2 ROWS ONLY
+      ) AS [t]
+      INNER JOIN [Users] AS [u] ON [t].[UserId] = [u].[Id]
+      ORDER BY [t].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__tourId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT CAST([r].[Rating] AS float)
+      FROM [Reviews] AS [r]
+      WHERE [r].[TourId] = @__tourId_0 AND [r].[Status] = 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__tourId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Reviews] AS [r]
+      WHERE [r].[TourId] = @__tourId_0 AND [r].[Status] = 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM [Destinations] AS [d]
+      ORDER BY [d].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM [Destinations] AS [d]
+      ORDER BY [d].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM [Destinations] AS [d]
+      ORDER BY [d].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM [Destinations] AS [d]
+      ORDER BY [d].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedEmail_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [u].[Id], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status], [u].[TwoFactorEnabled], [u].[UpdatedAt], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[NormalizedEmail] = @__normalizedEmail_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__normalizedUserName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status], [u].[TwoFactorEnabled], [u].[UpdatedAt], [u].[UserName]
+      FROM [Users] AS [u]
+      WHERE [u].[NormalizedUserName] = @__normalizedUserName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__user_Id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [a].[Id], [a].[ClaimType], [a].[ClaimValue], [a].[UserId]
+      FROM [AspNetUserClaims] AS [a]
+      WHERE [a].[UserId] = @__user_Id_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__userId_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [a0].[Name]
+      FROM [AspNetUserRoles] AS [a]
+      INNER JOIN [AspNetRoles] AS [a0] ON [a].[RoleId] = [a0].[Id]
+      WHERE [a].[UserId] = @__userId_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__normalizedName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__role_Id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [a].[ClaimType], [a].[ClaimValue]
+      FROM [AspNetRoleClaims] AS [a]
+      WHERE [a].[RoleId] = @__role_Id_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (7ms) [Parameters=[@p0='?' (Size = 100), @p1='?' (DbType = DateTime2), @p2='?' (Size = 100), @p3='?' (Size = 100), @p4='?' (Size = 50), @p5='?' (Size = 4000), @p6='?' (Size = 4000), @p7='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      INSERT INTO [AuditLogs] ([Action], [CreatedAt], [EntityId], [EntityType], [IpAddress], [NewValue], [OldValue], [UserId])
+      OUTPUT INSERTED.[Id]
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__normalizedRoleName_0='?' (Size = 256)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(2) [a].[Id], [a].[ConcurrencyStamp], [a].[Name], [a].[NormalizedName]
+      FROM [AspNetRoles] AS [a]
+      WHERE [a].[NormalizedName] = @__normalizedRoleName_0
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [a].[UserId], [a].[RoleId]
+      FROM [AspNetUserRoles] AS [a]
+      WHERE [a].[UserId] = @__p_0 AND [a].[RoleId] = @__p_1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Tours] AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Tours] AS [t]
+      WHERE [t].[Status] = 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Destinations] AS [d]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Users] AS [u]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Bookings] AS [b]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Bookings] AS [b]
+      WHERE [b].[Status] = 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Bookings] AS [b]
+      WHERE [b].[Status] = 2
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Bookings] AS [b]
+      WHERE [b].[Status] = 5
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Bookings] AS [b]
+      WHERE [b].[Status] = 4
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COALESCE(SUM([b].[TotalAmount]), 0.0)
+      FROM [Bookings] AS [b]
+      WHERE [b].[PaymentStatus] = 3
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [TourSchedules] AS [t]
+      WHERE [t].[StartDate] >= CONVERT(date, GETUTCDATE()) AND [t].[Status] <> 4
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (12ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [t].[Id] AS [TourId], [t].[Name] AS [TourName], [t].[Thumbnail], (
+          SELECT COUNT(*)
+          FROM [Bookings] AS [b0]
+          INNER JOIN [TourSchedules] AS [t1] ON [b0].[ScheduleId] = [t1].[Id]
+          WHERE [t1].[TourId] = [t].[Id] AND [b0].[Status] <> 4) AS [BookingCount], COALESCE((
+          SELECT COALESCE(SUM([b1].[TotalAmount]), 0.0)
+          FROM [Bookings] AS [b1]
+          INNER JOIN [TourSchedules] AS [t2] ON [b1].[ScheduleId] = [t2].[Id]
+          WHERE [t2].[TourId] = [t].[Id] AND [b1].[PaymentStatus] = 3), 0.0) AS [Revenue]
+      FROM [Tours] AS [t]
+      ORDER BY (
+          SELECT COUNT(*)
+          FROM [Bookings] AS [b]
+          INNER JOIN [TourSchedules] AS [t0] ON [b].[ScheduleId] = [t0].[Id]
+          WHERE [t0].[TourId] = [t].[Id] AND [b].[Status] <> 4) DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (16ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(@__p_0) [d].[Id] AS [DestinationId], [d].[Name], [d].[Image], (
+          SELECT COUNT(*)
+          FROM [Tours] AS [t1]
+          WHERE [t1].[DestinationId] = [d].[Id]) AS [TourCount], (
+          SELECT COUNT(*)
+          FROM [Bookings] AS [b0]
+          INNER JOIN [TourSchedules] AS [t2] ON [b0].[ScheduleId] = [t2].[Id]
+          INNER JOIN [Tours] AS [t3] ON [t2].[TourId] = [t3].[Id]
+          WHERE [t3].[DestinationId] = [d].[Id]) AS [BookingCount]
+      FROM [Destinations] AS [d]
+      ORDER BY (
+          SELECT COUNT(*)
+          FROM [Bookings] AS [b]
+          INNER JOIN [TourSchedules] AS [t] ON [b].[ScheduleId] = [t].[Id]
+          INNER JOIN [Tours] AS [t0] ON [t].[TourId] = [t0].[Id]
+          WHERE [t0].[DestinationId] = [d].[Id]) DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (38ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[Adults], [t].[BookedAt], [t].[BookingCode], [t].[CancelledAt], [t].[Children], [t].[CompletedAt], [t].[ConfirmedAt], [t].[CreatedAt], [t].[Discount], [t].[Note], [t].[PaidAmount], [t].[PaymentStatus], [t].[PromotionId], [t].[ScheduleId], [t].[Status], [t].[Subtotal], [t].[Surcharge], [t].[TotalAmount], [t].[UpdatedAt], [t].[UserId], [u].[Id], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status], [u].[TwoFactorEnabled], [u].[UpdatedAt], [u].[UserName], [t0].[Id], [t0].[BookedGuests], [t0].[Code], [t0].[CreatedAt], [t0].[EndDate], [t0].[MaxGuests], [t0].[MeetingPoint], [t0].[MeetingTime], [t0].[Price], [t0].[RowVersion], [t0].[StartDate], [t0].[Status], [t0].[TourId], [t0].[UpdatedAt], [t1].[Id], [t1].[BasePrice], [t1].[Code], [t1].[CreatedAt], [t1].[Description], [t1].[DestinationId], [t1].[DurationDays], [t1].[DurationNights], [t1].[ExcludedServices], [t1].[IncludedServices], [t1].[Name], [t1].[Policy], [t1].[RowVersion], [t1].[Status], [t1].[Thumbnail], [t1].[TourType], [t1].[UpdatedAt]
+      FROM (
+          SELECT TOP(@__p_0) [b].[Id], [b].[Adults], [b].[BookedAt], [b].[BookingCode], [b].[CancelledAt], [b].[Children], [b].[CompletedAt], [b].[ConfirmedAt], [b].[CreatedAt], [b].[Discount], [b].[Note], [b].[PaidAmount], [b].[PaymentStatus], [b].[PromotionId], [b].[ScheduleId], [b].[Status], [b].[Subtotal], [b].[Surcharge], [b].[TotalAmount], [b].[UpdatedAt], [b].[UserId]
+          FROM [Bookings] AS [b]
+          ORDER BY [b].[BookedAt] DESC
+      ) AS [t]
+      INNER JOIN [Users] AS [u] ON [t].[UserId] = [u].[Id]
+      INNER JOIN [TourSchedules] AS [t0] ON [t].[ScheduleId] = [t0].[Id]
+      INNER JOIN [Tours] AS [t1] ON [t0].[TourId] = [t1].[Id]
+      ORDER BY [t].[BookedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (6ms) [Parameters=[@__from_0='?' (DbType = DateTime2), @__AddDays_1='?' (DbType = DateTime2)], CommandType='Text', CommandTimeout='30']
+      SELECT [b].[Id], [b].[Adults], [b].[BookedAt], [b].[BookingCode], [b].[CancelledAt], [b].[Children], [b].[CompletedAt], [b].[ConfirmedAt], [b].[CreatedAt], [b].[Discount], [b].[Note], [b].[PaidAmount], [b].[PaymentStatus], [b].[PromotionId], [b].[ScheduleId], [b].[Status], [b].[Subtotal], [b].[Surcharge], [b].[TotalAmount], [b].[UpdatedAt], [b].[UserId]
+      FROM [Bookings] AS [b]
+      WHERE [b].[PaymentStatus] = 3 AND [b].[BookedAt] >= @__from_0 AND [b].[BookedAt] <= @__AddDays_1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Bookings] AS [b]
+      WHERE [b].[Status] = 3
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Tours] AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t0].[Id], [t0].[BasePrice], [t0].[Code], [t0].[CreatedAt], [t0].[Description], [t0].[DestinationId], [t0].[DurationDays], [t0].[DurationNights], [t0].[ExcludedServices], [t0].[IncludedServices], [t0].[Name], [t0].[Policy], [t0].[RowVersion], [t0].[Status], [t0].[Thumbnail], [t0].[TourType], [t0].[UpdatedAt], [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM (
+          SELECT [t].[Id], [t].[BasePrice], [t].[Code], [t].[CreatedAt], [t].[Description], [t].[DestinationId], [t].[DurationDays], [t].[DurationNights], [t].[ExcludedServices], [t].[IncludedServices], [t].[Name], [t].[Policy], [t].[RowVersion], [t].[Status], [t].[Thumbnail], [t].[TourType], [t].[UpdatedAt]
+          FROM [Tours] AS [t]
+          ORDER BY [t].[CreatedAt] DESC
+          OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+      ) AS [t0]
+      INNER JOIN [Destinations] AS [d] ON [t0].[DestinationId] = [d].[Id]
+      ORDER BY [t0].[CreatedAt] DESC
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM [Destinations] AS [d]
+      ORDER BY [d].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (0ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Bookings] AS [b]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t].[Id], [t].[Adults], [t].[BookedAt], [t].[BookingCode], [t].[CancelledAt], [t].[Children], [t].[CompletedAt], [t].[ConfirmedAt], [t].[CreatedAt], [t].[Discount], [t].[Note], [t].[PaidAmount], [t].[PaymentStatus], [t].[PromotionId], [t].[ScheduleId], [t].[Status], [t].[Subtotal], [t].[Surcharge], [t].[TotalAmount], [t].[UpdatedAt], [t].[UserId], [u].[Id], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status], [u].[TwoFactorEnabled], [u].[UpdatedAt], [u].[UserName], [t0].[Id], [t0].[BookedGuests], [t0].[Code], [t0].[CreatedAt], [t0].[EndDate], [t0].[MaxGuests], [t0].[MeetingPoint], [t0].[MeetingTime], [t0].[Price], [t0].[RowVersion], [t0].[StartDate], [t0].[Status], [t0].[TourId], [t0].[UpdatedAt], [t1].[Id], [t1].[BasePrice], [t1].[Code], [t1].[CreatedAt], [t1].[Description], [t1].[DestinationId], [t1].[DurationDays], [t1].[DurationNights], [t1].[ExcludedServices], [t1].[IncludedServices], [t1].[Name], [t1].[Policy], [t1].[RowVersion], [t1].[Status], [t1].[Thumbnail], [t1].[TourType], [t1].[UpdatedAt], [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt], [p].[Id], [p].[Amount], [p].[BookingId], [p].[CreatedAt], [p].[Method], [p].[Note], [p].[PaidAt], [p].[ProcessedBy], [p].[Status], [p].[TransactionCode]
+      FROM (
+          SELECT [b].[Id], [b].[Adults], [b].[BookedAt], [b].[BookingCode], [b].[CancelledAt], [b].[Children], [b].[CompletedAt], [b].[ConfirmedAt], [b].[CreatedAt], [b].[Discount], [b].[Note], [b].[PaidAmount], [b].[PaymentStatus], [b].[PromotionId], [b].[ScheduleId], [b].[Status], [b].[Subtotal], [b].[Surcharge], [b].[TotalAmount], [b].[UpdatedAt], [b].[UserId]
+          FROM [Bookings] AS [b]
+          ORDER BY [b].[BookedAt] DESC
+          OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+      ) AS [t]
+      INNER JOIN [Users] AS [u] ON [t].[UserId] = [u].[Id]
+      INNER JOIN [TourSchedules] AS [t0] ON [t].[ScheduleId] = [t0].[Id]
+      INNER JOIN [Tours] AS [t1] ON [t0].[TourId] = [t1].[Id]
+      INNER JOIN [Destinations] AS [d] ON [t1].[DestinationId] = [d].[Id]
+      LEFT JOIN [Payments] AS [p] ON [t].[Id] = [p].[BookingId]
+      ORDER BY [t].[BookedAt] DESC, [t].[Id], [u].[Id], [t0].[Id], [t1].[Id], [d].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Tours] AS [t]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32), @__p_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t0].[Id], [t0].[BasePrice], [t0].[Code], [t0].[CreatedAt], [t0].[Description], [t0].[DestinationId], [t0].[DurationDays], [t0].[DurationNights], [t0].[ExcludedServices], [t0].[IncludedServices], [t0].[Name], [t0].[Policy], [t0].[RowVersion], [t0].[Status], [t0].[Thumbnail], [t0].[TourType], [t0].[UpdatedAt], [d].[Id], [d].[City], [d].[Country], [d].[CreatedAt], [d].[Description], [d].[Image], [d].[Name], [d].[Status], [d].[UpdatedAt]
+      FROM (
+          SELECT [t].[Id], [t].[BasePrice], [t].[Code], [t].[CreatedAt], [t].[Description], [t].[DestinationId], [t].[DurationDays], [t].[DurationNights], [t].[ExcludedServices], [t].[IncludedServices], [t].[Name], [t].[Policy], [t].[RowVersion], [t].[Status], [t].[Thumbnail], [t].[TourType], [t].[UpdatedAt]
+          FROM [Tours] AS [t]
+          ORDER BY [t].[CreatedAt] DESC
+          OFFSET @__p_0 ROWS FETCH NEXT @__p_1 ROWS ONLY
+      ) AS [t0]
+      INNER JOIN [Destinations] AS [d] ON [t0].[DestinationId] = [d].[Id]
+      ORDER BY [t0].[CreatedAt] DESC
+warn: Microsoft.EntityFrameworkCore.Query[20504]
+      Compiling a query which loads related collections for more than one collection navigation, either via 'Include' or through projection, but no 'QuerySplittingBehavior' has been configured. By default, Entity Framework will use 'QuerySplittingBehavior.SingleQuery', which can potentially result in slow query performance. See https://go.microsoft.com/fwlink/?linkid=2134277 for more information. To identify the query that's triggering this warning call 'ConfigureWarnings(w => w.Throw(RelationalEventId.MultipleCollectionIncludeWarning))'.
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (11ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t1].[Id], [t1].[Adults], [t1].[BookedAt], [t1].[BookingCode], [t1].[CancelledAt], [t1].[Children], [t1].[CompletedAt], [t1].[ConfirmedAt], [t1].[CreatedAt], [t1].[Discount], [t1].[Note], [t1].[PaidAmount], [t1].[PaymentStatus], [t1].[PromotionId], [t1].[ScheduleId], [t1].[Status], [t1].[Subtotal], [t1].[Surcharge], [t1].[TotalAmount], [t1].[UpdatedAt], [t1].[UserId], [t1].[Id0], [t1].[AccessFailedCount], [t1].[Address], [t1].[Avatar], [t1].[ConcurrencyStamp], [t1].[CreatedAt0], [t1].[DateOfBirth], [t1].[Email], [t1].[EmailConfirmed], [t1].[FullName], [t1].[Gender], [t1].[LockoutEnabled], [t1].[LockoutEnd], [t1].[NormalizedEmail], [t1].[NormalizedUserName], [t1].[PasswordHash], [t1].[PhoneNumber], [t1].[PhoneNumberConfirmed], [t1].[SecurityStamp], [t1].[Status0], [t1].[TwoFactorEnabled], [t1].[UpdatedAt0], [t1].[UserName], [t1].[Id1], [t1].[BookedGuests], [t1].[Code], [t1].[CreatedAt1], [t1].[EndDate], [t1].[MaxGuests], [t1].[MeetingPoint], [t1].[MeetingTime], [t1].[Price], [t1].[RowVersion], [t1].[StartDate], [t1].[Status1], [t1].[TourId], [t1].[UpdatedAt1], [t1].[Id2], [t1].[BasePrice], [t1].[Code0], [t1].[CreatedAt2], [t1].[Description], [t1].[DestinationId], [t1].[DurationDays], [t1].[DurationNights], [t1].[ExcludedServices], [t1].[IncludedServices], [t1].[Name], [t1].[Policy], [t1].[RowVersion0], [t1].[Status2], [t1].[Thumbnail], [t1].[TourType], [t1].[UpdatedAt2], [t1].[Id3], [t1].[City], [t1].[Country], [t1].[CreatedAt3], [t1].[Description0], [t1].[Image], [t1].[Name0], [t1].[Status3], [t1].[UpdatedAt3], [t1].[Id4], [t1].[Id5], [b0].[Id], [b0].[BookingId], [b0].[DateOfBirth], [b0].[Email], [b0].[FullName], [b0].[Gender], [b0].[IdentityNumber], [b0].[IsAdult], [b0].[Note], [b0].[Phone], [p0].[Id], [p0].[Amount], [p0].[BookingId], [p0].[CreatedAt], [p0].[Method], [p0].[Note], [p0].[PaidAt], [p0].[ProcessedBy], [p0].[Status], [p0].[TransactionCode], [t1].[Code1], [t1].[CreatedAt4], [t1].[Description1], [t1].[DiscountType], [t1].[DiscountValue], [t1].[EndAt], [t1].[MaxDiscount], [t1].[MinOrderValue], [t1].[Name1], [t1].[StartAt], [t1].[Status4], [t1].[UpdatedAt4], [t1].[UsageCount], [t1].[UsageLimit], [t1].[BookingId], [t1].[Content], [t1].[CreatedAt5], [t1].[Image0], [t1].[Rating], [t1].[Status5], [t1].[TourId0], [t1].[UserId0]
+      FROM (
+          SELECT TOP(1) [b].[Id], [b].[Adults], [b].[BookedAt], [b].[BookingCode], [b].[CancelledAt], [b].[Children], [b].[CompletedAt], [b].[ConfirmedAt], [b].[CreatedAt], [b].[Discount], [b].[Note], [b].[PaidAmount], [b].[PaymentStatus], [b].[PromotionId], [b].[ScheduleId], [b].[Status], [b].[Subtotal], [b].[Surcharge], [b].[TotalAmount], [b].[UpdatedAt], [b].[UserId], [u].[Id] AS [Id0], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt] AS [CreatedAt0], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status] AS [Status0], [u].[TwoFactorEnabled], [u].[UpdatedAt] AS [UpdatedAt0], [u].[UserName], [t].[Id] AS [Id1], [t].[BookedGuests], [t].[Code], [t].[CreatedAt] AS [CreatedAt1], [t].[EndDate], [t].[MaxGuests], [t].[MeetingPoint], [t].[MeetingTime], [t].[Price], [t].[RowVersion], [t].[StartDate], [t].[Status] AS [Status1], [t].[TourId], [t].[UpdatedAt] AS [UpdatedAt1], [t0].[Id] AS [Id2], [t0].[BasePrice], [t0].[Code] AS [Code0], [t0].[CreatedAt] AS [CreatedAt2], [t0].[Description], [t0].[DestinationId], [t0].[DurationDays], [t0].[DurationNights], [t0].[ExcludedServices], [t0].[IncludedServices], [t0].[Name], [t0].[Policy], [t0].[RowVersion] AS [RowVersion0], [t0].[Status] AS [Status2], [t0].[Thumbnail], [t0].[TourType], [t0].[UpdatedAt] AS [UpdatedAt2], [d].[Id] AS [Id3], [d].[City], [d].[Country], [d].[CreatedAt] AS [CreatedAt3], [d].[Description] AS [Description0], [d].[Image], [d].[Name] AS [Name0], [d].[Status] AS [Status3], [d].[UpdatedAt] AS [UpdatedAt3], [p].[Id] AS [Id4], [p].[Code] AS [Code1], [p].[CreatedAt] AS [CreatedAt4], [p].[Description] AS [Description1], [p].[DiscountType], [p].[DiscountValue], [p].[EndAt], [p].[MaxDiscount], [p].[MinOrderValue], [p].[Name] AS [Name1], [p].[StartAt], [p].[Status] AS [Status4], [p].[UpdatedAt] AS [UpdatedAt4], [p].[UsageCount], [p].[UsageLimit], [r].[Id] AS [Id5], [r].[BookingId], [r].[Content], [r].[CreatedAt] AS [CreatedAt5], [r].[Image] AS [Image0], [r].[Rating], [r].[Status] AS [Status5], [r].[TourId] AS [TourId0], [r].[UserId] AS [UserId0]
+          FROM [Bookings] AS [b]
+          INNER JOIN [Users] AS [u] ON [b].[UserId] = [u].[Id]
+          INNER JOIN [TourSchedules] AS [t] ON [b].[ScheduleId] = [t].[Id]
+          INNER JOIN [Tours] AS [t0] ON [t].[TourId] = [t0].[Id]
+          INNER JOIN [Destinations] AS [d] ON [t0].[DestinationId] = [d].[Id]
+          LEFT JOIN [Promotions] AS [p] ON [b].[PromotionId] = [p].[Id]
+          LEFT JOIN [Reviews] AS [r] ON [b].[Id] = [r].[BookingId]
+          WHERE [b].[Id] = @__id_0
+      ) AS [t1]
+      LEFT JOIN [BookingParticipants] AS [b0] ON [t1].[Id] = [b0].[BookingId]
+      LEFT JOIN [Payments] AS [p0] ON [t1].[Id] = [p0].[BookingId]
+      ORDER BY [t1].[Id], [t1].[Id0], [t1].[Id1], [t1].[Id2], [t1].[Id3], [t1].[Id4], [t1].[Id5], [b0].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[@__id_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [t1].[Id], [t1].[Adults], [t1].[BookedAt], [t1].[BookingCode], [t1].[CancelledAt], [t1].[Children], [t1].[CompletedAt], [t1].[ConfirmedAt], [t1].[CreatedAt], [t1].[Discount], [t1].[Note], [t1].[PaidAmount], [t1].[PaymentStatus], [t1].[PromotionId], [t1].[ScheduleId], [t1].[Status], [t1].[Subtotal], [t1].[Surcharge], [t1].[TotalAmount], [t1].[UpdatedAt], [t1].[UserId], [t1].[Id0], [t1].[AccessFailedCount], [t1].[Address], [t1].[Avatar], [t1].[ConcurrencyStamp], [t1].[CreatedAt0], [t1].[DateOfBirth], [t1].[Email], [t1].[EmailConfirmed], [t1].[FullName], [t1].[Gender], [t1].[LockoutEnabled], [t1].[LockoutEnd], [t1].[NormalizedEmail], [t1].[NormalizedUserName], [t1].[PasswordHash], [t1].[PhoneNumber], [t1].[PhoneNumberConfirmed], [t1].[SecurityStamp], [t1].[Status0], [t1].[TwoFactorEnabled], [t1].[UpdatedAt0], [t1].[UserName], [t1].[Id1], [t1].[BookedGuests], [t1].[Code], [t1].[CreatedAt1], [t1].[EndDate], [t1].[MaxGuests], [t1].[MeetingPoint], [t1].[MeetingTime], [t1].[Price], [t1].[RowVersion], [t1].[StartDate], [t1].[Status1], [t1].[TourId], [t1].[UpdatedAt1], [t1].[Id2], [t1].[BasePrice], [t1].[Code0], [t1].[CreatedAt2], [t1].[Description], [t1].[DestinationId], [t1].[DurationDays], [t1].[DurationNights], [t1].[ExcludedServices], [t1].[IncludedServices], [t1].[Name], [t1].[Policy], [t1].[RowVersion0], [t1].[Status2], [t1].[Thumbnail], [t1].[TourType], [t1].[UpdatedAt2], [t1].[Id3], [t1].[City], [t1].[Country], [t1].[CreatedAt3], [t1].[Description0], [t1].[Image], [t1].[Name0], [t1].[Status3], [t1].[UpdatedAt3], [t1].[Id4], [t1].[Id5], [b0].[Id], [b0].[BookingId], [b0].[DateOfBirth], [b0].[Email], [b0].[FullName], [b0].[Gender], [b0].[IdentityNumber], [b0].[IsAdult], [b0].[Note], [b0].[Phone], [p0].[Id], [p0].[Amount], [p0].[BookingId], [p0].[CreatedAt], [p0].[Method], [p0].[Note], [p0].[PaidAt], [p0].[ProcessedBy], [p0].[Status], [p0].[TransactionCode], [t1].[Code1], [t1].[CreatedAt4], [t1].[Description1], [t1].[DiscountType], [t1].[DiscountValue], [t1].[EndAt], [t1].[MaxDiscount], [t1].[MinOrderValue], [t1].[Name1], [t1].[StartAt], [t1].[Status4], [t1].[UpdatedAt4], [t1].[UsageCount], [t1].[UsageLimit], [t1].[BookingId], [t1].[Content], [t1].[CreatedAt5], [t1].[Image0], [t1].[Rating], [t1].[Status5], [t1].[TourId0], [t1].[UserId0]
+      FROM (
+          SELECT TOP(1) [b].[Id], [b].[Adults], [b].[BookedAt], [b].[BookingCode], [b].[CancelledAt], [b].[Children], [b].[CompletedAt], [b].[ConfirmedAt], [b].[CreatedAt], [b].[Discount], [b].[Note], [b].[PaidAmount], [b].[PaymentStatus], [b].[PromotionId], [b].[ScheduleId], [b].[Status], [b].[Subtotal], [b].[Surcharge], [b].[TotalAmount], [b].[UpdatedAt], [b].[UserId], [u].[Id] AS [Id0], [u].[AccessFailedCount], [u].[Address], [u].[Avatar], [u].[ConcurrencyStamp], [u].[CreatedAt] AS [CreatedAt0], [u].[DateOfBirth], [u].[Email], [u].[EmailConfirmed], [u].[FullName], [u].[Gender], [u].[LockoutEnabled], [u].[LockoutEnd], [u].[NormalizedEmail], [u].[NormalizedUserName], [u].[PasswordHash], [u].[PhoneNumber], [u].[PhoneNumberConfirmed], [u].[SecurityStamp], [u].[Status] AS [Status0], [u].[TwoFactorEnabled], [u].[UpdatedAt] AS [UpdatedAt0], [u].[UserName], [t].[Id] AS [Id1], [t].[BookedGuests], [t].[Code], [t].[CreatedAt] AS [CreatedAt1], [t].[EndDate], [t].[MaxGuests], [t].[MeetingPoint], [t].[MeetingTime], [t].[Price], [t].[RowVersion], [t].[StartDate], [t].[Status] AS [Status1], [t].[TourId], [t].[UpdatedAt] AS [UpdatedAt1], [t0].[Id] AS [Id2], [t0].[BasePrice], [t0].[Code] AS [Code0], [t0].[CreatedAt] AS [CreatedAt2], [t0].[Description], [t0].[DestinationId], [t0].[DurationDays], [t0].[DurationNights], [t0].[ExcludedServices], [t0].[IncludedServices], [t0].[Name], [t0].[Policy], [t0].[RowVersion] AS [RowVersion0], [t0].[Status] AS [Status2], [t0].[Thumbnail], [t0].[TourType], [t0].[UpdatedAt] AS [UpdatedAt2], [d].[Id] AS [Id3], [d].[City], [d].[Country], [d].[CreatedAt] AS [CreatedAt3], [d].[Description] AS [Description0], [d].[Image], [d].[Name] AS [Name0], [d].[Status] AS [Status3], [d].[UpdatedAt] AS [UpdatedAt3], [p].[Id] AS [Id4], [p].[Code] AS [Code1], [p].[CreatedAt] AS [CreatedAt4], [p].[Description] AS [Description1], [p].[DiscountType], [p].[DiscountValue], [p].[EndAt], [p].[MaxDiscount], [p].[MinOrderValue], [p].[Name] AS [Name1], [p].[StartAt], [p].[Status] AS [Status4], [p].[UpdatedAt] AS [UpdatedAt4], [p].[UsageCount], [p].[UsageLimit], [r].[Id] AS [Id5], [r].[BookingId], [r].[Content], [r].[CreatedAt] AS [CreatedAt5], [r].[Image] AS [Image0], [r].[Rating], [r].[Status] AS [Status5], [r].[TourId] AS [TourId0], [r].[UserId] AS [UserId0]
+          FROM [Bookings] AS [b]
+          INNER JOIN [Users] AS [u] ON [b].[UserId] = [u].[Id]
+          INNER JOIN [TourSchedules] AS [t] ON [b].[ScheduleId] = [t].[Id]
+          INNER JOIN [Tours] AS [t0] ON [t].[TourId] = [t0].[Id]
+          INNER JOIN [Destinations] AS [d] ON [t0].[DestinationId] = [d].[Id]
+          LEFT JOIN [Promotions] AS [p] ON [b].[PromotionId] = [p].[Id]
+          LEFT JOIN [Reviews] AS [r] ON [b].[Id] = [r].[BookingId]
+          WHERE [b].[Id] = @__id_0
+      ) AS [t1]
+      LEFT JOIN [BookingParticipants] AS [b0] ON [t1].[Id] = [b0].[BookingId]
+      LEFT JOIN [Payments] AS [p0] ON [t1].[Id] = [p0].[BookingId]
+      ORDER BY [t1].[Id], [t1].[Id0], [t1].[Id1], [t1].[Id2], [t1].[Id3], [t1].[Id4], [t1].[Id5], [b0].[Id]

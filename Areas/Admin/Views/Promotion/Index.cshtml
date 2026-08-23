@@ -1,0 +1,44 @@
+@model PagedResult<Promotion>
+@using TourManagement.Web.Models.Enums
+@{ ViewData["Title"] = "Khuyến mãi"; var kw = ViewBag.Keyword as string; }
+<div class="d-flex justify-content-between mb-3">
+    <h3>Khuyến mãi</h3>
+    <a href="/Admin/Promotion/Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Thêm</a>
+</div>
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-4"><input type="text" name="keyword" value="@kw" placeholder="Mã hoặc tên..." class="form-control form-control-sm" /></div>
+        <div class="col-md-2"><button class="btn btn-primary btn-sm">Tìm</button></div>
+    </div>
+</form>
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Mã</th><th>Tên</th><th>Loại</th><th>Giá trị</th><th>Đơn tối thiểu</th><th>Đã dùng/Tổng</th><th>Hiệu lực</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var p in Model.Items)
+        {
+            <tr>
+                <td><code>@p.Code</code></td>
+                <td>@p.Name</td>
+                <td>@EnumHelper.GetDiscountTypeName(p.DiscountType)</td>
+                <td>@(p.DiscountType == 1 ? $"{p.DiscountValue}%" : $"{p.DiscountValue:N0} đ")</td>
+                <td>@p.MinOrderValue.ToString("N0") đ</td>
+                <td>@p.UsageCount / @p.UsageLimit</td>
+                <td><small>@p.StartAt.ToString("dd/MM/yy") - @p.EndAt.ToString("dd/MM/yy")</small></td>
+                <td>@(p.Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-secondary'>Inactive</span>")</td>
+                <td>
+                    <a href="/Admin/Promotion/Edit/@p.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                    <form asp-action="ToggleStatus" asp-route-id="@p.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-warning"><i class="bi bi-toggle-on"></i></button>
+                    </form>
+                    <form asp-action="Delete" asp-route-id="@p.Id" method="post" class="d-inline" onsubmit="return confirm('Xóa?')">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

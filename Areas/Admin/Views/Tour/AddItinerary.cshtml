@@ -1,0 +1,29 @@
+@model ItineraryFormViewModel
+@{ ViewData["Title"] = "Thêm ngày"; var tour = ViewBag.Tour as Tour; }
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Admin/Tour/Itineraries/@tour?.Id">Lịch trình</a></li>
+        <li class="breadcrumb-item active">Thêm</li>
+    </ol>
+</nav>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="AddItinerary" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="TourId" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-2 mb-3"><label class="form-label">Ngày *</label><input asp-for="DayNumber" type="number" class="form-control" /></div>
+                <div class="col-md-10 mb-3"><label class="form-label">Tiêu đề *</label><input asp-for="Title" class="form-control" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Nội dung</label><textarea asp-for="Description" class="form-control" rows="4"></textarea></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Địa điểm</label><input asp-for="Location" class="form-control" /></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Thời gian</label><input asp-for="TimeInfo" class="form-control" placeholder="VD: 08:00 - 18:00" /></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Bữa ăn</label><input asp-for="Meals" class="form-control" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Khách sạn</label><input asp-for="Hotel" class="form-control" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Ghi chú</label><textarea asp-for="Notes" class="form-control" rows="2"></textarea></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Hình ảnh</label><input type="file" name="image" class="form-control" /></div>
+            </div>
+            <button class="btn btn-primary">Lưu</button>
+            <a href="/Admin/Tour/Itineraries/@Model.TourId" class="btn btn-link">Hủy</a>
+        </form>
+    </div>
+</div>

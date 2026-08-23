@@ -1,0 +1,43 @@
+@model Tour
+@using TourManagement.Web.Models.Enums
+@{ ViewData["Title"] = "Chi tiết tour"; }
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Admin/Tour">Tour</a></li>
+        <li class="breadcrumb-item active">@Model.Name</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-3">
+            @if (!string.IsNullOrEmpty(Model.Thumbnail))
+            {
+                <img src="@Model.Thumbnail" class="card-img-top" />
+            }
+            <div class="card-body">
+                <h3>@Model.Name <span class="badge bg-secondary">@Model.Code</span></h3>
+                <p>@Model.Description</p>
+                <hr />
+                <div class="row">
+                    <div class="col-md-6"><strong>Điểm đến:</strong> @Model.Destination?.Name</div>
+                    <div class="col-md-6"><strong>Thời lượng:</strong> @Model.DurationDays ngày @Model.DurationNights đêm</div>
+                    <div class="col-md-6"><strong>Giá:</strong> @Model.BasePrice.ToString("N0") đ</div>
+                    <div class="col-md-6"><strong>Loại:</strong> @((TourType)Model.TourType)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <a href="/Admin/Tour/Edit/@Model.Id" class="btn btn-primary w-100 mb-2"><i class="bi bi-pencil"></i> Sửa</a>
+                <a href="/Admin/Tour/Itineraries/@Model.Id" class="btn btn-outline-success w-100 mb-2"><i class="bi bi-list-ol"></i> Lịch trình</a>
+                <form asp-action="Delete" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Xác nhận xóa?')">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-outline-danger w-100"><i class="bi bi-trash"></i> Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

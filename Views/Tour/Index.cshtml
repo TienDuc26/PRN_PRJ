@@ -1,0 +1,155 @@
+@model PagedResult<Tour>
+@using TourManagement.Web.Models.Enums
+@{
+    ViewData["Title"] = "Danh sách tour du lịch";
+    var filter = Context.Request.Query;
+    var destinations = ViewBag.Destinations as List<Destination> ?? new List<Destination>();
+}
+
+<section class="bg-light py-4">
+    <div class="container">
+        <h2 class="m-0"><i class="bi bi-map-fill text-primary"></i> Danh sách tour</h2>
+        <p class="text-muted mb-0 mt-1">Khám phá những tour du lịch tuyệt vời cùng TourViet</p>
+    </div>
+</section>
+
+<section class="container py-4">
+    <div class="row">
+        <div class="col-lg-3 col-md-4 mb-4">
+            <div class="card shadow-sm filter-card sticky-top" style="top:80px">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="bi bi-funnel-fill text-primary"></i> Bộ lọc</h5>
+                    <form method="get">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold"><i class="bi bi-search"></i> Từ khóa</label>
+                            <input type="text" name="keyword" value="@filter["keyword"]" class="form-control" placeholder="Tên tour, mã..." />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold"><i class="bi bi-geo-alt-fill"></i> Điểm đến</label>
+                            <select name="destinationId" class="form-select">
+                                <option value="">-- Tất cả điểm đến --</option>
+                                @foreach (var d in destinations)
+                                {
+                                    <option value="@d.Id" selected="@(filter["destinationId"] == d.Id.ToString())">@d.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold"><i class="bi bi-tag-fill"></i> Loại tour</label>
+                            <select name="tourType" class="form-select">
+                                <option value="">-- Tất cả loại --</option>
+                                <option value="1" selected="@(filter["tourType"]=="1")">🌳 Trong nước</option>
+                                <option value="2" selected="@(filter["tourType"]=="2")">🌏 Quốc tế</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold"><i class="bi bi-sort-down"></i> Sắp xếp</label>
+                            <select name="sortBy" class="form-select">
+                                <option value="" selected="@(string.IsNullOrEmpty(filter["sortBy"]))">Mặc định</option>
+                                <option value="newest" selected="@(filter["sortBy"]=="newest")">Mới nhất</option>
+                                <option value="price_asc" selected="@(filter["sortBy"]=="price_asc")">Giá thấp → cao</option>
+                                <option value="price_desc" selected="@(filter["sortBy"]=="price_desc")">Giá cao → thấp</option>
+                                <option value="rating" selected="@(filter["sortBy"]=="rating")">Đánh giá cao nhất</option>
+                                <option value="popular" selected="@(filter["sortBy"]=="popular")">Phổ biến nhất</option>
+                            </select>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Áp dụng
+                            </button>
+                            <a href="/Tour" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-lg"></i> Xóa bộ lọc
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9 col-md-8">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                <span class="text-muted">
+                    <i class="bi bi-search"></i> Tìm thấy <strong class="text-primary">@Model.TotalItems</strong> tour
+                </span>
+                @if (filter.Count > 0)
+                {
+                    <small class="text-muted"><i class="bi bi-funnel-fill"></i> Đang lọc</small>
+                }
+            </div>
+
+            @if (!Model.Items.Any())
+            {
+                <div class="empty-state">
+                    <i class="bi bi-emoji-frown"></i>
+                    <h4>Không tìm thấy tour nào phù hợp</h4>
+                    <p>Vui lòng thử điều chỉnh bộ lọc hoặc tìm kiếm với từ khóa khác.</p>
+                    <a href="/Tour" class="btn btn-primary mt-2">
+                        <i class="bi bi-arrow-clockwise"></i> Xem tất cả tour
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var t in Model.Items)
+                    {
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card tour-card h-100">
+                                <div class="position-relative">
+                                    <img src="@(t.Thumbnail ?? "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=500")" class="card-img-top" alt="@t.Name">
+                                    @if (t.BasePrice >= 5000000)
+                                    {
+                                        <span class="badge-discount"><i class="bi bi-fire"></i> HOT</span>
+                                    }
+                                    <span class="position-absolute top-0 start-0 m-2">
+                                        <span class="badge bg-primary-subtle text-primary">
+                                            <i class="bi bi-geo-alt-fill"></i> @(t.Destination?.Name ?? "Việt Nam")
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title fw-bold mb-2">@t.Name</h6>
+                                    <p class="text-muted small mb-2">
+                                        <i class="bi bi-clock"></i> @t.DurationDays ngày @t.DurationNights đêm
+                                    </p>
+                                    <div class="rating mb-2 small">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-half"></i>
+                                        <span class="text-muted ms-1">(4.5)</span>
+                                    </div>
+                                    <div class="mt-auto d-flex justify-content-between align-items-end">
+                                        <div>
+                                            <small class="text-muted d-block">Từ</small>
+                                            <div class="price">@t.BasePrice.ToString("N0") đ</div>
+                                            <small class="text-muted">/ khách</small>
+                                        </div>
+                                        <a href="/Tour/Details/@t.Id" class="btn btn-sm btn-primary">
+                                            Đặt ngay <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.TotalPages > 1)
+                {
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.Page ? "active" : "")">
+                                    <a class="page-link" href="?keyword=@filter["keyword"]&destinationId=@filter["destinationId"]&tourType=@filter["tourType"]&sortBy=@filter["sortBy"]&page=@i">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+        </div>
+    </div>
+</section>

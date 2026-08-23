@@ -1,0 +1,58 @@
+@model List<ApplicationUser>
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+    var roleMap = ViewBag.RoleMap as Dictionary<int, string>;
+    var kw = ViewBag.Keyword as string;
+}
+<h3>Người dùng hệ thống</h3>
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-4"><input type="text" name="keyword" value="@kw" placeholder="Tên, email..." class="form-control form-control-sm" /></div>
+        <div class="col-md-2"><button class="btn btn-primary btn-sm">Tìm</button></div>
+        <div class="col-md-2 ms-auto"><a href="/Admin/User/Create" class="btn btn-success btn-sm w-100"><i class="bi bi-plus"></i> Tạo user</a></div>
+    </div>
+</form>
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Họ tên</th><th>Email</th><th>SĐT</th><th>Role</th><th>Trạng thái</th><th>Ngày tạo</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var u in Model)
+        {
+            var role = roleMap != null && roleMap.ContainsKey(u.Id) ? roleMap[u.Id] : "CUSTOMER";
+            <tr>
+                <td>@u.FullName</td>
+                <td>@u.Email</td>
+                <td>@u.PhoneNumber</td>
+                <td><span class="badge bg-info">@role</span></td>
+                <td>@(u.Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Locked</span>")</td>
+                <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
+                <td>
+                    <form asp-action="ChangeRole" asp-route-userId="@u.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <select name="newRole" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                            <option value="">Đổi role</option>
+                            <option value="CUSTOMER">CUSTOMER</option>
+                            <option value="STAFF">STAFF</option>
+                            <option value="ADMIN">ADMIN</option>
+                        </select>
+                    </form>
+                    @if (u.Status == 1)
+                    {
+                        <form asp-action="Lock" asp-route-id="@u.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-outline-warning"><i class="bi bi-lock"></i></button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Unlock" asp-route-id="@u.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-outline-success"><i class="bi bi-unlock"></i></button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

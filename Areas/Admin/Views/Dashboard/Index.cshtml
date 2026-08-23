@@ -1,0 +1,164 @@
+@model DashboardViewModel
+@using TourManagement.Web.Models.Enums
+@{ ViewData["Title"] = "Dashboard"; }
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Tổng tour</div>
+                    <div class="stat-value text-primary">@Model.TotalTours</div>
+                </div>
+                <div class="stat-icon bg-primary text-white"><i class="bi bi-map"></i></div>
+            </div>
+            <small class="text-muted">@Model.ActiveTours đang hoạt động</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card" style="border-left-color:#28a745">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Tổng doanh thu</div>
+                    <div class="stat-value text-success">@Model.TotalRevenue.ToString("N0") đ</div>
+                </div>
+                <div class="stat-icon bg-success text-white"><i class="bi bi-cash-coin"></i></div>
+            </div>
+            <small class="text-muted">đã thanh toán</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card" style="border-left-color:#ffc107">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Tổng booking</div>
+                    <div class="stat-value text-warning">@Model.TotalBookings</div>
+                </div>
+                <div class="stat-icon bg-warning text-white"><i class="bi bi-receipt"></i></div>
+            </div>
+            <small class="text-muted">@Model.PendingBookings đang chờ</small>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card" style="border-left-color:#17a2b8">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Khách hàng</div>
+                    <div class="stat-value text-info">@Model.TotalCustomers</div>
+                </div>
+                <div class="stat-icon bg-info text-white"><i class="bi bi-people"></i></div>
+            </div>
+            <small class="text-muted">@Model.UpcomingSchedules lịch sắp khởi hành</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0"><i class="bi bi-graph-up"></i> Doanh thu 7 ngày qua</h5></div>
+            <div class="card-body">
+                <canvas id="revenueChart" style="height:300px"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0">Trạng thái booking</h5></div>
+            <div class="card-body">
+                <canvas id="bookingChart" style="height:300px"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0"><i class="bi bi-fire"></i> Tour bán chạy</h5></div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Tour</th><th>Booking</th><th>Doanh thu</th></tr></thead>
+                    <tbody>
+                    @foreach (var t in Model.TopTours)
+                    {
+                        <tr>
+                            <td>@t.TourName</td>
+                            <td>@t.BookingCount</td>
+                            <td>@t.Revenue.ToString("N0") đ</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white"><h5 class="mb-0"><i class="bi bi-geo-alt"></i> Điểm đến phổ biến</h5></div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Điểm đến</th><th>Tours</th><th>Bookings</th></tr></thead>
+                    <tbody>
+                    @foreach (var d in Model.PopularDestinations)
+                    {
+                        <tr>
+                            <td>@d.Name</td>
+                            <td>@d.TourCount</td>
+                            <td>@d.BookingCount</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white"><h5 class="mb-0"><i class="bi bi-clock-history"></i> Đơn đặt gần đây</h5></div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Mã đơn</th><th>Khách hàng</th><th>Tour</th><th>Ngày đặt</th><th>Tổng tiền</th><th>Trạng thái</th></tr></thead>
+            <tbody>
+            @foreach (var b in Model.RecentBookings)
+            {
+                <tr>
+                    <td>@b.BookingCode</td>
+                    <td>@b.User?.FullName</td>
+                    <td>@b.Schedule?.Tour?.Name</td>
+                    <td>@b.BookedAt.ToString("dd/MM/yyyy")</td>
+                    <td>@b.TotalAmount.ToString("N0") đ</td>
+                    <td><span class="badge @EnumHelper.GetBadgeClass(b.Status, typeof(BookingStatus))">@EnumHelper.GetBookingStatusName(b.Status)</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const revLabels = [@Html.Raw(string.Join(",", Model.RevenueSeries.Select(r => "'" + r.Date.ToString("dd/MM") + "'")))];
+const revData = [@Html.Raw(string.Join(",", Model.RevenueSeries.Select(r => r.Amount)))];
+new Chart(document.getElementById('revenueChart'), {
+    type: 'line',
+    data: {
+        labels: revLabels,
+        datasets: [{ label: 'Doanh thu (VNĐ)', data: revData, borderColor: '#0066cc', backgroundColor: 'rgba(0,102,204,0.1)', tension: 0.3, fill: true }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+});
+const statusLabels = [@Html.Raw(string.Join(",", Model.BookingsByStatus.Keys.Select(k => "'" + k + "'")))];
+const statusData = [@Html.Raw(string.Join(",", Model.BookingsByStatus.Values))];
+new Chart(document.getElementById('bookingChart'), {
+    type: 'doughnut',
+    data: {
+        labels: statusLabels,
+        datasets: [{ data: statusData, backgroundColor: ['#ffc107','#17a2b8','#28a745','#007bff','#dc3545'] }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+});
+</script>
+}

@@ -1,0 +1,55 @@
+@model TourFormViewModel
+@{ ViewData["Title"] = "Sửa tour"; var destinations = ViewBag.Destinations as List<Destination>; }
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Admin/Tour">Tour</a></li>
+        <li class="breadcrumb-item active">Sửa</li>
+    </ol>
+</nav>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-4 mb-3"><label class="form-label">Mã tour *</label><input asp-for="Code" class="form-control" /></div>
+                <div class="col-md-8 mb-3"><label class="form-label">Tên tour *</label><input asp-for="Name" class="form-control" /></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Điểm đến *</label>
+                    <select asp-for="DestinationId" class="form-select">
+                        @foreach (var d in destinations ?? new())
+                        {
+                            <option value="@d.Id" selected="@(d.Id == Model.DestinationId)">@d.Name</option>
+                        }
+                    </select></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Số ngày</label><input asp-for="DurationDays" type="number" class="form-control" /></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Số đêm</label><input asp-for="DurationNights" type="number" class="form-control" /></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Giá</label><input asp-for="BasePrice" type="number" class="form-control" /></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Loại</label>
+                    <select asp-for="TourType" class="form-select">
+                        <option value="1">Trong nước</option><option value="2">Quốc tế</option>
+                    </select></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Trạng thái</label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="1">Active</option><option value="2">Inactive</option>
+                    </select></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Ảnh đại diện</label>
+                    @if (!string.IsNullOrEmpty(Model.Thumbnail))
+                    {
+                        <div class="mb-2"><img src="@Model.Thumbnail" style="max-height:80px" /></div>
+                    }
+                    <input type="file" name="thumbnail" class="form-control" accept="image/*" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Bao gồm</label>
+                    <textarea asp-for="IncludedServices" class="form-control" rows="3"></textarea></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Không bao gồm</label>
+                    <textarea asp-for="ExcludedServices" class="form-control" rows="3"></textarea></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Chính sách</label>
+                    <textarea asp-for="Policy" class="form-control" rows="2"></textarea></div>
+            </div>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a href="/Admin/Tour" class="btn btn-link">Hủy</a>
+        </form>
+    </div>
+</div>

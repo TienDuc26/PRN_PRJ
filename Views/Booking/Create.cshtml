@@ -1,0 +1,175 @@
+@model BookingCreateViewModel
+@using TourManagement.Web.Models.Enums
+@{
+    ViewData["Title"] = "Đặt tour";
+    var schedule = ViewBag.Schedule as TourSchedule;
+    var tour = ViewBag.Tour as Tour;
+}
+
+<section class="bg-light py-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/Tour/Details/@tour?.Id">@tour?.Name</a></li>
+                <li class="breadcrumb-item active">Đặt tour</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="container py-4">
+    <h2 class="mb-4"><i class="bi bi-receipt"></i> Đặt tour: @tour?.Name</h2>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin lịch khởi hành</h5>
+                    <p class="mb-1"><strong>Ngày khởi hành:</strong> @schedule?.StartDate.ToString("dd/MM/yyyy")</p>
+                    <p class="mb-1"><strong>Ngày về:</strong> @schedule?.EndDate.ToString("dd/MM/yyyy")</p>
+                    <p class="mb-1"><strong>Giờ tập trung:</strong> @schedule?.MeetingTime.ToString(@"hh\:mm")</p>
+                    <p class="mb-1"><strong>Điểm tập trung:</strong> @schedule?.MeetingPoint</p>
+                    <p class="mb-0"><strong>Số chỗ còn lại:</strong> @schedule?.AvailableSeats / @schedule?.MaxGuests</p>
+                </div>
+            </div>
+
+            <form asp-action="Create" method="post" id="bookingForm">
+                <input type="hidden" asp-for="ScheduleId" />
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5>1. Số lượng khách</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Người lớn</label>
+                                <input asp-for="Adults" type="number" min="1" class="form-control" id="adultsInput" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Trẻ em</label>
+                                <input asp-for="Children" type="number" min="0" class="form-control" id="childrenInput" />
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="genParticipants">
+                            <i class="bi bi-person-plus"></i> Tạo form nhập thông tin
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-3" id="participantsCard" style="display:none">
+                    <div class="card-body">
+                        <h5>2. Thông tin người tham gia</h5>
+                        <div id="participantsList"></div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5>3. Khuyến mãi (không bắt buộc)</h5>
+                        <div class="input-group">
+                            <input type="text" id="promoCode" class="form-control" placeholder="Nhập mã khuyến mãi" />
+                            <button type="button" class="btn btn-primary" id="applyPromo">
+                                <i class="bi bi-tag"></i> Áp dụng
+                            </button>
+                        </div>
+                        <small id="promoMsg" class="text-muted"></small>
+                        <input type="hidden" asp-for="PromotionCode" id="promoCodeHidden" />
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <h5>4. Ghi chú</h5>
+                        <textarea asp-for="Note" class="form-control" rows="2" placeholder="Yêu cầu đặc biệt..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100">
+                    <i class="bi bi-check-circle"></i> Xác nhận đặt tour
+                </button>
+            </form>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top:80px">
+                <div class="card-body">
+                    <h5>Tóm tắt đơn hàng</h5>
+                    <p class="mb-1"><strong>Tour:</strong> @tour?.Name</p>
+                    <p class="mb-1"><strong>Khởi hành:</strong> @schedule?.StartDate.ToString("dd/MM/yyyy")</p>
+                    <hr />
+                    <div class="d-flex justify-content-between"><span>Đơn giá:</span><strong>@schedule?.Price.ToString("N0") đ</strong></div>
+                    <div class="d-flex justify-content-between"><span>Trẻ em giảm:</span><strong>30%</strong></div>
+                    <small class="text-muted">*Trẻ em được giảm 30% giá vé</small>
+                    <hr />
+                    <p class="text-muted">Tổng tiền sẽ được tính khi xác nhận.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+document.getElementById('genParticipants').addEventListener('click', function() {
+    const adults = parseInt(document.getElementById('adultsInput').value) || 0;
+    const children = parseInt(document.getElementById('childrenInput').value) || 0;
+    const total = adults + children;
+    if (total <= 0) { alert('Vui lòng nhập số khách'); return; }
+    const list = document.getElementById('participantsList');
+    list.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+        const isAdult = i < adults;
+        list.insertAdjacentHTML('beforeend', `
+        <div class="border rounded p-3 mb-3">
+            <h6 class="mb-3">Người thứ ${i + 1} ${isAdult ? '(Người lớn)' : '(Trẻ em)'}</h6>
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label class="form-label small">Họ tên *</label>
+                    <input class="form-control" name="Participants[${i}].FullName" required />
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label small">Ngày sinh</label>
+                    <input type="date" class="form-control" name="Participants[${i}].DateOfBirth" />
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label class="form-label small">Giới tính</label>
+                    <select class="form-select" name="Participants[${i}].Gender">
+                        <option value="1">Nam</option><option value="2">Nữ</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label class="form-label small">Số CMND/CCCD</label>
+                    <input class="form-control" name="Participants[${i}].IdentityNumber" />
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label class="form-label small">Số điện thoại</label>
+                    <input class="form-control" name="Participants[${i}].Phone" />
+                </div>
+                <input type="hidden" name="Participants[${i}].IsAdult" value="${isAdult}" />
+            </div>
+        </div>`);
+    }
+    document.getElementById('participantsCard').style.display = 'block';
+    document.getElementById('participantsCard').scrollIntoView({ behavior: 'smooth' });
+});
+
+document.getElementById('applyPromo').addEventListener('click', async function() {
+    const code = document.getElementById('promoCode').value.trim();
+    const msg = document.getElementById('promoMsg');
+    if (!code) { msg.innerHTML = '<span class="text-danger">Vui lòng nhập mã</span>'; return; }
+    const adults = parseInt(document.getElementById('adultsInput').value) || 1;
+    const children = parseInt(document.getElementById('childrenInput').value) || 0;
+    const price = parseFloat('@schedule?.Price' || 0);
+    const amount = price * adults + price * 0.7 * children;
+    const r = await fetch(`/Booking/CheckPromo?code=${encodeURIComponent(code)}&amount=${amount}`);
+    const d = await r.json();
+    if (d.success) {
+        msg.innerHTML = `<span class="text-success">✓ ${d.message} - Giảm: ${d.discount.toLocaleString()} đ</span>`;
+        document.getElementById('promoCodeHidden').value = code;
+    } else {
+        msg.innerHTML = `<span class="text-danger">✗ ${d.message}</span>`;
+        document.getElementById('promoCodeHidden').value = '';
+    }
+});
+</script>
+}

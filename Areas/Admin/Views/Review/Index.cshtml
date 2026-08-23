@@ -1,0 +1,49 @@
+@model PagedResult<Review>
+@using TourManagement.Web.Models.Enums
+@{ ViewData["Title"] = "Đánh giá"; var status = ViewBag.Status as int?; }
+<h3>Quản lý đánh giá</h3>
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-3">
+            <select name="status" class="form-select form-select-sm">
+                <option value="">Tất cả</option>
+                <option value="1" selected="@(status==1)">Hiển thị</option>
+                <option value="2" selected="@(status==2)">Đã ẩn</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button class="btn btn-primary btn-sm">Lọc</button></div>
+    </div>
+</form>
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Khách</th><th>Tour</th><th>Rating</th><th>Nội dung</th><th>Ngày</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var r in Model.Items)
+        {
+            <tr>
+                <td>@r.User?.FullName</td>
+                <td>@r.Tour?.Name</td>
+                <td class="text-warning">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <i class="bi bi-star@(i <= r.Rating ? "-fill" : "")"></i>
+                    }
+                </td>
+                <td>@(r.Content.Length > 80 ? r.Content.Substring(0, 80) + "..." : r.Content)</td>
+                <td>@r.CreatedAt.ToString("dd/MM/yyyy")</td>
+                <td>@(r.Status == 1 ? "<span class='badge bg-success'>Hiển thị</span>" : "<span class='badge bg-secondary'>Ẩn</span>")</td>
+                <td>
+                    <form asp-action="ToggleVisibility" asp-route-id="@r.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-warning"><i class="bi bi-eye-slash"></i></button>
+                    </form>
+                    <form asp-action="Delete" asp-route-id="@r.Id" method="post" class="d-inline" onsubmit="return confirm('Xóa?')">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

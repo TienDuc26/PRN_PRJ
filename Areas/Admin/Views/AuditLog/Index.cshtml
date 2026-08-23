@@ -1,0 +1,28 @@
+@model PagedResult<AuditLog>
+@{ ViewData["Title"] = "Nhật ký hoạt động"; var act = ViewBag.Action as string; }
+<h3>Nhật ký hoạt động</h3>
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-4"><input type="text" name="action" value="@act" placeholder="Hành động..." class="form-control form-control-sm" /></div>
+        <div class="col-md-2"><button class="btn btn-primary btn-sm">Lọc</button></div>
+    </div>
+</form>
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Thời gian</th><th>User</th><th>Hành động</th><th>Entity</th><th>ID</th><th>IP</th><th>Chi tiết</th></tr></thead>
+        <tbody>
+        @foreach (var l in Model.Items)
+        {
+            <tr>
+                <td>@l.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@l.User?.FullName</td>
+                <td><span class="badge bg-secondary">@l.Action</span></td>
+                <td>@l.EntityType</td>
+                <td>@l.EntityId</td>
+                <td>@l.IpAddress</td>
+                <td><small>@l.NewValue</small></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

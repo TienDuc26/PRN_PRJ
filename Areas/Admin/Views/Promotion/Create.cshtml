@@ -1,0 +1,29 @@
+@model PromotionFormViewModel
+@{ ViewData["Title"] = "Tạo khuyến mãi"; }
+<h3>Tạo khuyến mãi</h3>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-4 mb-3"><label class="form-label">Mã *</label><input asp-for="Code" class="form-control" style="text-transform:uppercase" /></div>
+                <div class="col-md-8 mb-3"><label class="form-label">Tên *</label><input asp-for="Name" class="form-control" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Mô tả</label><textarea asp-for="Description" class="form-control" rows="2"></textarea></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Loại giảm</label>
+                    <select asp-for="DiscountType" class="form-select">
+                        <option value="1">Phần trăm</option><option value="2">Cố định</option>
+                    </select></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Giá trị</label><input asp-for="DiscountValue" type="number" class="form-control" /></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Giảm tối đa</label><input asp-for="MaxDiscount" type="number" class="form-control" /></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Đơn tối thiểu</label><input asp-for="MinOrderValue" type="number" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Bắt đầu</label><input asp-for="StartAt" type="datetime-local" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Kết thúc</label><input asp-for="EndAt" type="datetime-local" class="form-control" /></div>
+                <div class="col-md-2 mb-3"><label class="form-label">Lượt SD</label><input asp-for="UsageLimit" type="number" class="form-control" /></div>
+                <div class="col-md-2 mb-3"><label class="form-label">Trạng thái</label>
+                    <select asp-for="Status" class="form-select"><option value="1">Active</option><option value="2">Inactive</option></select></div>
+            </div>
+            <button class="btn btn-primary">Lưu</button>
+            <a href="/Admin/Promotion" class="btn btn-link">Hủy</a>
+        </form>
+    </div>
+</div>

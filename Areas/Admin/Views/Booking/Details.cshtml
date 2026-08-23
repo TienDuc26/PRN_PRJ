@@ -1,0 +1,78 @@
+@model Booking
+@using TourManagement.Web.Models.Enums
+@{ ViewData["Title"] = "Đơn " + Model.BookingCode; }
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Admin/Booking">Booking</a></li>
+        <li class="breadcrumb-item active">@Model.BookingCode</li>
+    </ol>
+</nav>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h3>@Model.BookingCode</h3>
+                        <small>@Model.BookedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                    <div>
+                        <span class="badge @EnumHelper.GetBadgeClass(Model.Status, typeof(BookingStatus)) fs-6">@EnumHelper.GetBookingStatusName(Model.Status)</span>
+                        <span class="badge @EnumHelper.GetBadgeClass(Model.PaymentStatus, typeof(PaymentStatus)) fs-6">@EnumHelper.GetPaymentStatusName(Model.PaymentStatus)</span>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-6"><strong>Khách:</strong> @Model.User?.FullName (@Model.User?.Email - @Model.User?.PhoneNumber)</div>
+                    <div class="col-md-6"><strong>Tour:</strong> @Model.Schedule?.Tour?.Name</div>
+                    <div class="col-md-6"><strong>Khởi hành:</strong> @Model.Schedule?.StartDate.ToString("dd/MM/yyyy")</div>
+                    <div class="col-md-6"><strong>Khách:</strong> @Model.Adults NL + @Model.Children TE = @Model.TotalGuests</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h5>Thanh toán</h5>
+                <table class="table table-sm">
+                    <tr><td>Tạm tính</td><td class="text-end">@Model.Subtotal.ToString("N0") đ</td></tr>
+                    <tr><td>Giảm giá</td><td class="text-end">-@Model.Discount.ToString("N0") đ</td></tr>
+                    <tr class="fw-bold"><td>Tổng</td><td class="text-end">@Model.TotalAmount.ToString("N0") đ</td></tr>
+                    <tr><td>Đã thanh toán</td><td class="text-end text-success">@Model.PaidAmount.ToString("N0") đ</td></tr>
+                </table>
+                <a href="/Admin/Payment/Index?bookingId=@Model.Id" class="btn btn-outline-primary"><i class="bi bi-credit-card"></i> Quản lý thanh toán</a>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h5>Người tham gia</h5>
+                <ul class="list-group">
+                    @foreach (var p in Model.Participants)
+                    {
+                        <li class="list-group-item">@p.FullName (@(p.IsAdult ? "NL" : "TE")) - @p.Phone - @p.IdentityNumber</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Thao tác</h5>
+                <form asp-action="Confirm" asp-route-id="@Model.Id" method="post" class="mb-2">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-success w-100"><i class="bi bi-check-circle"></i> Xác nhận</button>
+                </form>
+                <form asp-action="Complete" asp-route-id="@Model.Id" method="post" class="mb-2">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-primary w-100"><i class="bi bi-flag"></i> Hoàn thành</button>
+                </form>
+                <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Hủy đơn?')">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-danger w-100"><i class="bi bi-x-circle"></i> Hủy đơn</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

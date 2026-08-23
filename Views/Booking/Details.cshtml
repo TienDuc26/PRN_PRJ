@@ -1,0 +1,258 @@
+@model Booking
+@using TourManagement.Web.Models.Enums
+@{
+    ViewData["Title"] = "Đơn " + Model.BookingCode;
+    var canReview = (bool)(ViewBag.CanReview ?? false);
+    var avgRating = (double)(ViewBag.AvgRating ?? 0.0);
+    var remaining = Model.TotalAmount - Model.PaidAmount;
+    var statusClass = Model.Status switch
+    {
+        (int)BookingStatus.PENDING => "status-pending",
+        (int)BookingStatus.CONFIRMED => "status-confirmed",
+        (int)BookingStatus.PAID => "status-paid",
+        (int)BookingStatus.COMPLETED => "status-completed",
+        (int)BookingStatus.CANCELLED => "status-cancelled",
+        _ => "status-pending"
+    };
+    var paymentClass = Model.PaymentStatus switch
+    {
+        (int)PaymentStatus.PAID => "status-paid",
+        (int)PaymentStatus.PARTIAL_PAID => "status-partial",
+        (int)PaymentStatus.UNPAID => "status-unpaid",
+        (int)PaymentStatus.REFUNDED => "status-refunded",
+        _ => "status-unpaid"
+    };
+
+    // Xác định step nào trong timeline đang active
+    var isCompleted = Model.Status == (int)BookingStatus.COMPLETED;
+    var isCancelled = Model.Status == (int)BookingStatus.CANCELLED;
+    var isPaid = Model.PaymentStatus == (int)PaymentStatus.PAID;
+    var isConfirmed = Model.Status == (int)BookingStatus.CONFIRMED || isPaid || isCompleted;
+}
+
+<section class="bg-light py-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/Booking"><i class="bi bi-receipt"></i> Đơn của tôi</a></li>
+                <li class="breadcrumb-item active">@Model.BookingCode</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="container py-4">
+    <!-- HEADER -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <h3 class="mb-1 fw-bold"><i class="bi bi-receipt-cutoff text-primary"></i> @Model.BookingCode</h3>
+                    <small class="text-muted"><i class="bi bi-calendar3"></i> Đặt lúc @Model.BookedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <span class="status-badge @statusClass">@EnumHelper.GetBookingStatusName(Model.Status)</span>
+                    <span class="status-badge @paymentClass">@EnumHelper.GetPaymentStatusName(Model.PaymentStatus)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <h6 class="mb-3 fw-bold"><i class="bi bi-list-ol text-primary"></i> Tiến độ đơn hàng</h6>
+            <ul class="timeline">
+                <li class="timeline-item @(isConfirmed || isPaid || isCompleted ? "success" : "active")">
+                    <h6>Đơn đã tạo</h6>
+                    <small>@Model.BookedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                </li>
+                <li class="timeline-item @(isConfirmed ? "active" : (isPaid || isCompleted ? "success" : ""))">
+                    <h6>Đã xác nhận</h6>
+                    <small>@(Model.ConfirmedAt?.ToString("dd/MM/yyyy HH:mm") ?? "Đang chờ")</small>
+                </li>
+                <li class="timeline-item @(isPaid ? "active" : (isCompleted ? "success" : ""))">
+                    <h6>Đã thanh toán</h6>
+                    <small>@(Model.PaidAmount.ToString("N0")) / @Model.TotalAmount.ToString("N0") đ</small>
+                </li>
+                <li class="timeline-item @(isCompleted ? "success" : (isCancelled ? "danger" : ""))">
+                    <h6>Hoàn thành tour</h6>
+                    <small>@(Model.CompletedAt?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa")</small>
+                </li>
+                @if (isCancelled)
+                {
+                    <li class="timeline-item danger">
+                        <h6>Đã hủy</h6>
+                        <small>@Model.CancelledAt?.ToString("dd/MM/yyyy HH:mm")</small>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- TOUR INFO -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="bi bi-map-fill text-primary"></i> Thông tin tour</h5>
+                    <p class="mb-2"><strong>Tour:</strong> <a href="/Tour/Details/@Model.Schedule?.TourId">@Model.Schedule?.Tour?.Name</a></p>
+                    <p class="mb-2"><strong>Mã tour:</strong> <code>@Model.Schedule?.Tour?.Code</code></p>
+                    <p class="mb-2"><i class="bi bi-calendar-event text-success"></i> <strong>Khởi hành:</strong> @Model.Schedule?.StartDate.ToString("dd/MM/yyyy") - @Model.Schedule?.EndDate.ToString("dd/MM/yyyy")</p>
+                    <p class="mb-2"><i class="bi bi-geo-alt-fill text-danger"></i> <strong>Điểm tập trung:</strong> @Model.Schedule?.MeetingPoint lúc @Model.Schedule?.MeetingTime.ToString(@"hh\:mm")</p>
+                    <p class="mb-0"><i class="bi bi-clock-fill text-warning"></i> <strong>Thời gian:</strong> @Model.Schedule?.Tour?.DurationDays ngày @Model.Schedule?.Tour?.DurationNights đêm</p>
+                </div>
+            </div>
+
+            <!-- PARTICIPANTS -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="bi bi-people-fill text-primary"></i> Danh sách khách (@Model.TotalGuests người)</h5>
+                    <div class="row mb-3">
+                        <div class="col-auto"><span class="badge bg-primary-subtle text-primary p-2"><i class="bi bi-person"></i> Người lớn: @Model.Adults</span></div>
+                        <div class="col-auto"><span class="badge bg-warning-subtle text-warning p-2"><i class="bi bi-emoji-smile"></i> Trẻ em: @Model.Children</span></div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Họ tên</th>
+                                    <th>Giới tính</th>
+                                    <th>Ngày sinh</th>
+                                    <th>CMND/CCCD</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int idx = 1; }
+                                @foreach (var p in Model.Participants)
+                                {
+                                    <tr>
+                                        <td>@(idx++)</td>
+                                        <td><strong>@p.FullName</strong></td>
+                                        <td>@EnumHelper.GetGenderName(p.Gender)</td>
+                                        <td>@(p.DateOfBirth?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                        <td>@(p.IdentityNumber ?? "-")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAYMENT -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="bi bi-credit-card-fill text-primary"></i> Thanh toán</h5>
+                    <table class="table table-sm">
+                        <tr><td>Tạm tính</td><td class="text-end">@Model.Subtotal.ToString("N0") đ</td></tr>
+                        @if (Model.Discount > 0)
+                        {
+                            <tr class="text-success"><td>Giảm giá @(Model.Promotion != null ? $"({Model.Promotion.Code})" : "")</td><td class="text-end">-@Model.Discount.ToString("N0") đ</td></tr>
+                        }
+                        @if (Model.Surcharge > 0)
+                        {
+                            <tr><td>Phụ phí</td><td class="text-end">@Model.Surcharge.ToString("N0") đ</td></tr>
+                        }
+                        <tr class="fw-bold fs-5 border-top"><td>Tổng tiền</td><td class="text-end text-primary">@Model.TotalAmount.ToString("N0") đ</td></tr>
+                        <tr><td>Đã thanh toán</td><td class="text-end text-success">@Model.PaidAmount.ToString("N0") đ</td></tr>
+                        @if (remaining > 0)
+                        {
+                            <tr class="fw-bold"><td>Còn lại</td><td class="text-end text-danger">@remaining.ToString("N0") đ</td></tr>
+                        }
+                    </table>
+                    @if (Model.Payments.Any())
+                    {
+                        <h6 class="mt-3"><i class="bi bi-clock-history"></i> Lịch sử thanh toán</h6>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var p in Model.Payments.OrderByDescending(x => x.PaidAt))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@p.TransactionCode</strong><br />
+                                        <small class="text-muted">
+                                            <i class="bi bi-calendar3"></i> @p.PaidAt?.ToString("dd/MM/yyyy HH:mm")
+                                            - @EnumHelper.GetPaymentMethodName(p.Method)
+                                            @if (!string.IsNullOrEmpty(p.Note))
+                                            {
+                                                <span class="ms-1">- @p.Note</span>
+                                            }
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <strong class="@(p.Amount >= 0 ? "text-success" : "text-danger") fs-6">
+                                            @(p.Amount >= 0 ? "+" : "")@p.Amount.ToString("N0") đ
+                                        </strong>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top:80px">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="bi bi-gear-fill"></i> Thao tác</h5>
+
+                    @{
+                        var canPay = remaining > 0
+                            && Model.Status != (int)BookingStatus.CANCELLED
+                            && Model.Status != (int)BookingStatus.COMPLETED;
+                    }
+
+                    @if (canPay)
+                    {
+                        <div class="alert alert-warning">
+                            <strong><i class="bi bi-exclamation-triangle-fill"></i> Còn nợ: @remaining.ToString("N0") đ</strong>
+                        </div>
+                        <a href="/Booking/Pay/@Model.Id" class="btn btn-success w-100 mb-2">
+                            <i class="bi bi-credit-card-fill"></i> Thanh toán ngay
+                        </a>
+                    }
+                    else if (Model.PaymentStatus == (int)PaymentStatus.PAID)
+                    {
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle-fill"></i> Đã thanh toán đủ
+                        </div>
+                    }
+
+                    @if (Model.Status == (int)BookingStatus.PENDING || Model.Status == (int)BookingStatus.CONFIRMED)
+                    {
+                        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-danger w-100" data-confirm="Bạn chắc chắn muốn hủy đơn này?">
+                                <i class="bi bi-x-circle-fill"></i> Hủy đơn
+                            </button>
+                        </form>
+                        <small class="text-muted d-block mt-2">
+                            <i class="bi bi-info-circle"></i> Chính sách hủy: trước 15 ngày hoàn 100%, trước 7-14 ngày hoàn 70%, dưới 7 ngày không hoàn.
+                        </small>
+                    }
+                    @if (canReview)
+                    {
+                        <hr />
+                        <a href="/Review/Create?bookingId=@Model.Id" class="btn btn-warning w-100">
+                            <i class="bi bi-star-fill"></i> Đánh giá tour
+                        </a>
+                    }
+                    @if (Model.Review != null)
+                    {
+                        <hr />
+                        <h6><i class="bi bi-chat-quote"></i> Đánh giá của bạn</h6>
+                        <p class="text-warning mb-1">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="bi bi-star@(i <= Model.Review.Rating ? "-fill" : "")"></i>
+                            }
+                        </p>
+                        <p class="small mb-0">@Model.Review.Content</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

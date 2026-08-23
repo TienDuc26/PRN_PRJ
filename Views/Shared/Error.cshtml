@@ -1,0 +1,13 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Lỗi";
+}
+<section class="container py-5 text-center">
+    <h1 class="display-1 text-danger">Lỗi</h1>
+    <h2>Đã xảy ra lỗi khi xử lý yêu cầu của bạn.</h2>
+    @if (Model.ShowRequestId)
+    {
+        <p class="text-muted">Mã lỗi: <code>@Model.RequestId</code></p>
+    }
+    <a href="/" class="btn btn-primary mt-3">Về trang chủ</a>
+</section>

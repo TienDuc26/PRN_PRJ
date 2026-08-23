@@ -1,0 +1,33 @@
+@model PagedResult<Tour>
+@{
+    ViewData["Title"] = "Tour " + ((Destination)ViewBag.Destination)?.Name;
+    var dest = (Destination)ViewBag.Destination;
+}
+<section class="bg-light py-4">
+    <div class="container">
+        <h2>@dest.Name - @dest.City, @dest.Country</h2>
+        <p class="text-muted">@dest.Description</p>
+        <a href="/Tour" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-left"></i> Tất cả tour</a>
+    </div>
+</section>
+<section class="container py-4">
+    <p>Tìm thấy <strong>@Model.TotalItems</strong> tour</p>
+    <div class="row">
+        @foreach (var t in Model.Items)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card tour-card h-100">
+                    <img src="@(t.Thumbnail ?? "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=500")" class="card-img-top">
+                    <div class="card-body">
+                        <h6 class="card-title">@t.Name</h6>
+                        <p class="text-muted small"><i class="bi bi-clock"></i> @t.DurationDays ngày @t.DurationNights đêm</p>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div class="price">@t.BasePrice.ToString("N0") đ</div>
+                            <a href="/Tour/Details/@t.Id" class="btn btn-sm btn-primary">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

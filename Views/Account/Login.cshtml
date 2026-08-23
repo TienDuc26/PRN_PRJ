@@ -1,0 +1,42 @@
+@model LoginViewModel
+@{ ViewData["Title"] = "Đăng nhập"; var returnUrl = ViewBag.ReturnUrl as string; }
+<section class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm p-4">
+                <h2 class="text-center mb-4"><i class="bi bi-box-arrow-in-right text-primary"></i> Đăng nhập</h2>
+                <form asp-action="Login" method="post">
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" type="email" autofocus />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mật khẩu</label>
+                        <input asp-for="Password" class="form-control" type="password" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" type="checkbox" />
+                        <label class="form-check-label">Ghi nhớ đăng nhập</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+                </form>
+                <div class="text-center mt-3">
+                    <a href="/Account/ForgotPassword">Quên mật khẩu?</a>
+                    <span class="mx-2">|</span>
+                    <a href="/Account/Register">Đăng ký</a>
+                </div>
+                <hr />
+                <div class="small text-muted">
+                    <strong>Tài khoản demo:</strong><br />
+                    Admin: admin@tour.com / Admin@123<br />
+                    Staff: staff@tour.com / Staff@123<br />
+                    Customer: customer@tour.com / Customer@123
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

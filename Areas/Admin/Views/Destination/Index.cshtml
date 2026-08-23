@@ -1,0 +1,39 @@
+@model PagedResult<Destination>
+@{ ViewData["Title"] = "Điểm đến"; var kw = ViewBag.Keyword as string; }
+<div class="d-flex justify-content-between mb-3">
+    <h3>Điểm đến</h3>
+    <a href="/Admin/Destination/Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Thêm</a>
+</div>
+
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-4"><input type="text" name="keyword" value="@kw" placeholder="Tên, thành phố..." class="form-control form-control-sm" /></div>
+        <div class="col-md-2"><button class="btn btn-primary btn-sm">Tìm</button></div>
+    </div>
+</form>
+
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Ảnh</th><th>Tên</th><th>Thành phố</th><th>Quốc gia</th><th>Số tour</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var d in Model.Items)
+        {
+            <tr>
+                <td>@if (!string.IsNullOrEmpty(d.Image)) { <img src="@d.Image" style="width:60px;height:40px;object-fit:cover" /> }</td>
+                <td>@d.Name</td>
+                <td>@d.City</td>
+                <td>@d.Country</td>
+                <td>@d.Tours.Count</td>
+                <td>@(d.Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-secondary'>Inactive</span>")</td>
+                <td>
+                    <a href="/Admin/Destination/Edit/@d.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                    <form asp-action="Delete" asp-route-id="@d.Id" method="post" class="d-inline" onsubmit="return confirm('Xóa điểm đến?')">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

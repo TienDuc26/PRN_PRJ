@@ -1,0 +1,137 @@
+@model PagedResult<Booking>
+@using TourManagement.Web.Models.Enums
+@{
+    ViewData["Title"] = "Đơn của tôi";
+}
+<section class="bg-light py-4">
+    <div class="container">
+        <h2 class="m-0"><i class="bi bi-receipt-cutoff text-primary"></i> Đơn đặt tour của tôi</h2>
+        <p class="text-muted mb-0 mt-1">Quản lý tất cả đơn đặt tour của bạn</p>
+    </div>
+</section>
+
+<section class="container py-4">
+    <ul class="nav nav-pills mb-3 flex-wrap">
+        <li class="nav-item"><a class="nav-link @(ViewBag.Status == null ? "active" : "")" href="/Booking">
+            <i class="bi bi-list-ul"></i> Tất cả
+        </a></li>
+        <li class="nav-item"><a class="nav-link @(ViewBag.Status == (int)BookingStatus.PENDING ? "active" : "")" href="/Booking?status=1">
+            <i class="bi bi-hourglass-split"></i> Chờ xử lý
+        </a></li>
+        <li class="nav-item"><a class="nav-link @(ViewBag.Status == (int)BookingStatus.CONFIRMED ? "active" : "")" href="/Booking?status=2">
+            <i class="bi bi-check-circle"></i> Đã xác nhận
+        </a></li>
+        <li class="nav-item"><a class="nav-link @(ViewBag.Status == (int)BookingStatus.PAID ? "active" : "")" href="/Booking?status=3">
+            <i class="bi bi-credit-card-fill"></i> Đã thanh toán
+        </a></li>
+        <li class="nav-item"><a class="nav-link @(ViewBag.Status == (int)BookingStatus.COMPLETED ? "active" : "")" href="/Booking?status=5">
+            <i class="bi bi-trophy-fill"></i> Hoàn thành
+        </a></li>
+        <li class="nav-item"><a class="nav-link @(ViewBag.Status == (int)BookingStatus.CANCELLED ? "active" : "")" href="/Booking?status=4">
+            <i class="bi bi-x-circle-fill"></i> Đã hủy
+        </a></li>
+    </ul>
+
+    @if (!Model.Items.Any())
+    {
+        <div class="empty-state">
+            <i class="bi bi-suitcase-lg"></i>
+            <h4>Bạn chưa có đơn đặt tour nào</h4>
+            <p>Hãy khám phá những tour tuyệt vời và đặt ngay hôm nay!</p>
+            <a href="/Tour" class="btn btn-primary btn-lg mt-2">
+                <i class="bi bi-search"></i> Khám phá tour ngay
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive data-table">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Tour</th>
+                        <th>Khởi hành</th>
+                        <th>Khách</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Thanh toán</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var b in Model.Items)
+                {
+                    var remain = b.TotalAmount - b.PaidAmount;
+                    var statusClass = b.Status switch
+                    {
+                        (int)BookingStatus.PENDING => "status-pending",
+                        (int)BookingStatus.CONFIRMED => "status-confirmed",
+                        (int)BookingStatus.PAID => "status-paid",
+                        (int)BookingStatus.COMPLETED => "status-completed",
+                        (int)BookingStatus.CANCELLED => "status-cancelled",
+                        _ => "status-pending"
+                    };
+                    var paymentClass = b.PaymentStatus switch
+                    {
+                        (int)PaymentStatus.PAID => "status-paid",
+                        (int)PaymentStatus.PARTIAL_PAID => "status-partial",
+                        (int)PaymentStatus.UNPAID => "status-unpaid",
+                        (int)PaymentStatus.REFUNDED => "status-refunded",
+                        _ => "status-unpaid"
+                    };
+                    <tr>
+                        <td>
+                            <strong class="text-primary">@b.BookingCode</strong><br />
+                            <small class="text-muted"><i class="bi bi-calendar3"></i> @b.BookedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                        </td>
+                        <td>
+                            <strong>@b.Schedule?.Tour?.Name</strong><br />
+                            <small class="text-muted"><i class="bi bi-geo-alt"></i> @(b.Schedule?.Tour?.Destination?.Name)</small>
+                        </td>
+                        <td>
+                            <strong>@b.Schedule?.StartDate.ToString("dd/MM/yyyy")</strong><br />
+                            <small class="text-muted">@(b.Schedule?.Tour?.DurationDays)N@(b.Schedule?.Tour?.DurationDays - 1)Đ</small>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">@b.TotalGuests người</span></td>
+                        <td>
+                            <strong class="text-danger">@b.TotalAmount.ToString("N0") đ</strong>
+                            @if (remain > 0)
+                            {
+                                <br /><small class="text-warning">Còn nợ: @remain.ToString("N0") đ</small>
+                            }
+                        </td>
+                        <td><span class="status-badge @statusClass">@EnumHelper.GetBookingStatusName(b.Status)</span></td>
+                        <td><span class="status-badge @paymentClass">@EnumHelper.GetPaymentStatusName(b.PaymentStatus)</span></td>
+                        <td>
+                            <a href="/Booking/Details/@b.Id" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> Chi tiết
+                            </a>
+                            @if (remain > 0 && b.Status != (int)BookingStatus.CANCELLED && b.Status != (int)BookingStatus.COMPLETED)
+                            {
+                                <a href="/Booking/Pay/@b.Id" class="btn btn-sm btn-success">
+                                    <i class="bi bi-credit-card-fill"></i> Thanh toán
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.Page ? "active" : "")">
+                            <a class="page-link" href="/Booking?page=@i&status=@ViewBag.Status">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+</section>

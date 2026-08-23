@@ -1,0 +1,40 @@
+@model List<TourItinerary>
+@{ ViewData["Title"] = "Lịch trình tour"; var tour = ViewBag.Tour as Tour; }
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Admin/Tour">Tour</a></li>
+        <li class="breadcrumb-item active">@tour?.Name</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Lịch trình: @tour?.Name</h4>
+    <a href="/Admin/Tour/AddItinerary?tourId=@tour?.Id" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Thêm ngày</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Ngày</th><th>Tiêu đề</th><th>Địa điểm</th><th>Bữa ăn</th><th>Khách sạn</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var i in Model)
+            {
+                <tr>
+                    <td><span class="badge bg-primary">Ngày @i.DayNumber</span></td>
+                    <td>@i.Title</td>
+                    <td>@i.Location</td>
+                    <td>@i.Meals</td>
+                    <td>@i.Hotel</td>
+                    <td>
+                        <a href="/Admin/Tour/EditItinerary/@i.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                        <form asp-action="DeleteItinerary" asp-route-id="@i.Id" asp-route-tourId="@tour?.Id" method="post" class="d-inline" onsubmit="return confirm('Xóa ngày này?')">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,131 @@
+@inject TourManagement.Web.Services.Interfaces.INotificationService _notiService
+@using Microsoft.AspNetCore.Http
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TourViet Admin</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body class="admin-body">
+    <div class="d-flex">
+        <!-- SIDEBAR -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <span class="brand-icon"><i class="bi bi-globe-asia-australia"></i></span>
+                    <div class="brand-text">
+                        <span class="brand-name">TourViet</span>
+                        <span class="brand-tagline">Admin Panel</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Admin/Dashboard">
+                            <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-heading">Quản lý Tour</li>
+                    <li><a class="nav-link" href="/Admin/Tour"><i class="bi bi-map-fill"></i> <span>Tour</span></a></li>
+                    <li><a class="nav-link" href="/Admin/Destination"><i class="bi bi-geo-alt-fill"></i> <span>Điểm đến</span></a></li>
+                    <li><a class="nav-link" href="/Admin/Schedule"><i class="bi bi-calendar3"></i> <span>Lịch khởi hành</span></a></li>
+                    <li class="sidebar-heading">Đơn hàng</li>
+                    <li><a class="nav-link" href="/Admin/Booking"><i class="bi bi-receipt-cutoff"></i> <span>Đơn đặt tour</span></a></li>
+                    <li><a class="nav-link" href="/Admin/Payment"><i class="bi bi-credit-card-fill"></i> <span>Thanh toán</span></a></li>
+                    <li class="sidebar-heading">Vận hành</li>
+                    <li><a class="nav-link" href="/Admin/Customer"><i class="bi bi-people-fill"></i> <span>Khách hàng</span></a></li>
+                    <li><a class="nav-link" href="/Admin/Guide"><i class="bi bi-person-badge-fill"></i> <span>Hướng dẫn viên</span></a></li>
+                    <li><a class="nav-link" href="/Admin/Review"><i class="bi bi-star-fill"></i> <span>Đánh giá</span></a></li>
+                    <li><a class="nav-link" href="/Admin/Promotion"><i class="bi bi-gift-fill"></i> <span>Khuyến mãi</span></a></li>
+                    <li class="sidebar-heading">Thống kê</li>
+                    <li><a class="nav-link" href="/Admin/Report"><i class="bi bi-bar-chart-fill"></i> <span>Báo cáo</span></a></li>
+                    @if (User.IsInRole("ADMIN"))
+                    {
+                        <li class="sidebar-heading">Hệ thống (Admin)</li>
+                        <li><a class="nav-link" href="/Admin/User"><i class="bi bi-person-gear"></i> <span>Người dùng</span></a></li>
+                        <li><a class="nav-link" href="/Admin/AuditLog"><i class="bi bi-journal-text"></i> <span>Nhật ký hoạt động</span></a></li>
+                    }
+                    <li class="sidebar-divider"></li>
+                    <li><a class="nav-link text-warning" href="/"><i class="bi bi-arrow-left"></i> <span>Về trang khách</span></a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="admin-main flex-grow-1">
+            <header class="admin-topbar">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-icon btn-light d-md-none me-2" id="sidebarToggle"><i class="bi bi-list"></i></button>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="/Admin/Dashboard"><i class="bi bi-house-fill"></i></a></li>
+                            <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="/" class="btn btn-icon btn-light" title="Xem trang khách" target="_blank">
+                        <i class="bi bi-globe"></i>
+                    </a>
+                    <div class="dropdown user-menu">
+                        <a class="user-toggle" data-bs-toggle="dropdown">
+                            <span class="user-avatar"><i class="bi bi-person-fill"></i></span>
+                            <span class="user-info d-none d-md-inline">
+                                <span class="user-name">@User.GetFullName()</span>
+                                <span class="user-role">@(User.IsInRole("ADMIN") ? "Quản trị viên" : "Nhân viên")</span>
+                            </span>
+                            <i class="bi bi-chevron-down ms-1"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li class="dropdown-header">
+                                <div class="fw-bold">@User.GetFullName()</div>
+                                <small class="text-muted">@(User.Identity?.Name)</small>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/"><i class="bi bi-house"></i> Trang khách hàng</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="/Account/Logout" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <main class="admin-content">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success-custom alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger-custom alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="~/js/admin.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

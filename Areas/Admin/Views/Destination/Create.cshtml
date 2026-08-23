@@ -1,0 +1,21 @@
+@model DestinationViewModel
+@{ ViewData["Title"] = "Tạo điểm đến"; }
+<h3>Tạo điểm đến</h3>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-6 mb-3"><label class="form-label">Tên *</label><input asp-for="Name" class="form-control" /></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Thành phố *</label><input asp-for="City" class="form-control" /></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Quốc gia *</label><input asp-for="Country" class="form-control" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Mô tả</label><textarea asp-for="Description" class="form-control" rows="3"></textarea></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Ảnh</label><input type="file" name="image" class="form-control" /></div>
+                <div class="col-md-3 mb-3"><label class="form-label">Trạng thái</label>
+                    <select asp-for="Status" class="form-select"><option value="1">Active</option><option value="2">Inactive</option></select></div>
+            </div>
+            <button class="btn btn-primary">Lưu</button>
+            <a href="/Admin/Destination" class="btn btn-link">Hủy</a>
+        </form>
+    </div>
+</div>

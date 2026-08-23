@@ -1,0 +1,26 @@
+@model PaymentCreateViewModel
+@{
+    ViewData["Title"] = "Tạo thanh toán";
+    var booking = ViewBag.Booking as Booking;
+}
+<h3>Tạo thanh toán cho đơn @booking?.BookingCode</h3>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <input type="hidden" asp-for="BookingId" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-6 mb-3"><label class="form-label">Số tiền (VNĐ) *</label><input asp-for="Amount" type="number" min="0" step="1000" class="form-control" /></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Phương thức *</label>
+                    <select asp-for="Method" class="form-select">
+                        <option value="1">Tiền mặt</option>
+                        <option value="2">Chuyển khoản</option>
+                        <option value="3">Online</option>
+                    </select></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Ghi chú</label><input asp-for="Note" class="form-control" /></div>
+            </div>
+            <button class="btn btn-primary">Lưu</button>
+            <a href="/Admin/Payment/Index?bookingId=@Model.BookingId" class="btn btn-link">Hủy</a>
+        </form>
+    </div>
+</div>

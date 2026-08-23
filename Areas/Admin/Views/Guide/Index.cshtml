@@ -1,0 +1,42 @@
+@model PagedResult<Guide>
+@{ ViewData["Title"] = "Hướng dẫn viên"; var kw = ViewBag.Keyword as string; }
+<div class="d-flex justify-content-between mb-3">
+    <h3>Hướng dẫn viên</h3>
+    <a href="/Admin/Guide/Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Thêm HDV</a>
+</div>
+<form method="get" class="card p-3 mb-3">
+    <div class="row g-2">
+        <div class="col-md-4"><input type="text" name="keyword" value="@kw" placeholder="Tên, SĐT, email..." class="form-control form-control-sm" /></div>
+        <div class="col-md-2"><button class="btn btn-primary btn-sm">Tìm</button></div>
+    </div>
+</form>
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Họ tên</th><th>SĐT</th><th>Email</th><th>KN</th><th>Ngôn ngữ</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var g in Model.Items)
+        {
+            <tr>
+                <td>@g.FullName</td>
+                <td>@g.Phone</td>
+                <td>@g.Email</td>
+                <td>@(g.ExperienceYears ?? 0) năm</td>
+                <td>@g.Languages</td>
+                <td>@(g.Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-secondary'>Inactive</span>")</td>
+                <td>
+                    <a href="/Admin/Guide/Edit/@g.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                    <a href="/Admin/Guide/Schedule/@g.Id" class="btn btn-sm btn-outline-info"><i class="bi bi-calendar"></i></a>
+                    <form asp-action="ToggleStatus" asp-route-id="@g.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-warning"><i class="bi bi-toggle-on"></i></button>
+                    </form>
+                    <form asp-action="Delete" asp-route-id="@g.Id" method="post" class="d-inline" onsubmit="return confirm('Xóa?')">
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

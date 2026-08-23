@@ -1,0 +1,185 @@
+@model PaymentCreateViewModel
+@using TourManagement.Web.Models.Enums
+@using System.Globalization
+@{
+    ViewData["Title"] = "Thanh toán";
+    var booking = ViewBag.Booking as Booking;
+    var paid = (decimal)(ViewBag.Paid ?? 0m);
+    var remaining = (decimal)(ViewBag.Remaining ?? 0m);
+    // Chuẩn hoá về số nguyên để tránh lỗi so sánh float ở client/server
+    var remainingInt = (long)Math.Ceiling(remaining);
+    var halfInt = (long)Math.Ceiling(remaining / 2m);
+    // Bỏ step=1000 để không chặn nhập đúng số tiền lẻ; min=1000 (1.000đ)
+}
+<section class="bg-light py-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/Booking">Đơn của tôi</a></li>
+                <li class="breadcrumb-item"><a href="/Booking/Details/@booking?.Id">@booking?.BookingCode</a></li>
+                <li class="breadcrumb-item active">Thanh toán</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="container py-4">
+    <h2 class="mb-4"><i class="bi bi-credit-card text-primary"></i> Thanh toán đơn @booking?.BookingCode</h2>
+
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5>Thông tin đơn hàng</h5>
+                    <table class="table table-sm">
+                        <tr><td>Mã đơn</td><td><strong>@booking?.BookingCode</strong></td></tr>
+                        <tr><td>Tour</td><td>@booking?.Schedule?.Tour?.Name</td></tr>
+                        <tr><td>Khởi hành</td><td>@booking?.Schedule?.StartDate.ToString("dd/MM/yyyy")</td></tr>
+                        <tr><td>Khách</td><td>@booking?.TotalGuests người (NL: @booking?.Adults, TE: @booking?.Children)</td></tr>
+                        <tr class="fw-bold"><td>Tổng tiền</td><td class="text-primary">@booking?.TotalAmount.ToString("N0") đ</td></tr>
+                        <tr><td>Đã thanh toán</td><td class="text-success">@paid.ToString("N0") đ</td></tr>
+                        <tr class="fw-bold"><td>Còn lại</td><td class="text-danger fs-5">@remainingInt.ToString("N0") đ</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Chọn phương thức thanh toán</h5>
+                    <form asp-action="Pay" method="post">
+                        <input type="hidden" asp-for="BookingId" />
+                        <div asp-validation-summary="All" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phương thức *</label>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="radio" class="btn-check" name="Method" id="m1" value="1" />
+                                    <label class="btn btn-outline-primary w-100" for="m1">
+                                        <i class="bi bi-cash fs-3 d-block"></i> Tiền mặt
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" class="btn-check" name="Method" id="m2" value="2" checked />
+                                    <label class="btn btn-outline-primary w-100" for="m2">
+                                        <i class="bi bi-bank fs-3 d-block"></i> Chuyển khoản
+                                    </label>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="radio" class="btn-check" name="Method" id="m3" value="3" />
+                                    <label class="btn btn-outline-secondary w-100" for="m3" disabled>
+                                        <i class="bi bi-globe fs-3 d-block"></i> Online <small>(sắp có)</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Số tiền thanh toán (VNĐ) *</label>
+                            <input asp-for="Amount" type="number" min="1000" max="@remainingInt" step="any" class="form-control form-control-lg" id="amountInput" required />
+                            <input type="hidden" id="remainingHidden" value="@remainingInt" />
+                            <span asp-validation-for="Amount" class="text-danger small"></span>
+                            <div class="mt-2 d-flex flex-wrap gap-1">
+                                <button type="button" class="btn btn-sm btn-primary" onclick="setAmount(@remainingInt)">
+                                    <i class="bi bi-check2-circle"></i> Thanh toán hết (@remainingInt.ToString("N0") đ)
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setAmount(@halfInt)">
+                                    50% (@halfInt.ToString("N0") đ)
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setAmount(500000)">
+                                    500.000 đ
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setAmount(1000000)">
+                                    1.000.000 đ
+                                </button>
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="bi bi-info-circle"></i> Bạn có thể thanh toán một phần nhiều lần. Số tiền tối thiểu 1.000đ, tối đa bằng số tiền còn lại.
+                            </small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú / Mã giao dịch</label>
+                            <textarea asp-for="Note" class="form-control" rows="2" placeholder="VD: CK ngân hàng VCB lúc 14h, mã GD FT24001..."></textarea>
+                        </div>
+
+                        <button type="submit" id="btnSubmit" class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-check-circle"></i> Xác nhận thanh toán
+                        </button>
+                        <a href="/Booking/Details/@booking?.Id" class="btn btn-link w-100 mt-2">Quay lại</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-info-circle"></i> Hướng dẫn chuyển khoản</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Ngân hàng:</strong> Vietcombank</p>
+                    <p class="mb-1"><strong>Số TK:</strong> 1234 5678 9012</p>
+                    <p class="mb-1"><strong>Chủ TK:</strong> CONG TY TOUVIET</p>
+                    <p class="mb-1"><strong>Chi nhánh:</strong> TP.HCM</p>
+                    <hr />
+                    <p class="mb-1"><strong>Nội dung CK:</strong></p>
+                    <code class="d-block p-2 bg-light">@booking?.BookingCode</code>
+                    <small class="text-muted">Vui lòng ghi đúng nội dung để được ghi nhận nhanh.</small>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6>Lưu ý</h6>
+                    <ul class="small mb-0">
+                        <li>Đơn sẽ được xác nhận tự động sau khi Staff/Admin ghi nhận thanh toán.</li>
+                        <li>Liên hệ hotline <strong>1900 6868</strong> nếu cần hỗ trợ.</li>
+                        <li>Có thể thanh toán nhiều lần cho đến khi đủ tổng tiền.</li>
+                        <li>Hoàn tiền theo chính sách khi hủy đơn.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+// Ép kiểu số nguyên, không để float noise
+function setAmount(amount) {
+    var n = parseInt(amount, 10);
+    if (isNaN(n) || n <= 0) return;
+    document.getElementById('amountInput').value = n;
+}
+
+// Ngăn submit nhiều lần + validate phía client trước khi gửi
+(function() {
+    var form = document.querySelector('form[action*="Pay"], form[asp-action="Pay"]');
+    if (!form) form = document.querySelectorAll('main form')[0];
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+        var amountEl = document.getElementById('amountInput');
+        var remaining = parseInt(document.getElementById('remainingHidden').value, 10);
+        var amount = parseInt(amountEl.value, 10);
+        if (isNaN(amount) || amount < 1000) {
+            e.preventDefault();
+            Swal.fire({ icon: 'warning', title: 'Số tiền không hợp lệ', text: 'Số tiền tối thiểu là 1.000đ.' });
+            return;
+        }
+        if (amount > remaining) {
+            e.preventDefault();
+            Swal.fire({ icon: 'warning', title: 'Vượt quá số tiền còn lại', text: 'Số tiền tối đa là ' + remaining.toLocaleString('vi-VN') + 'đ.' });
+            return;
+        }
+        var btn = document.getElementById('btnSubmit');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+            setTimeout(function() { btn.disabled = false; btn.innerHTML = '<i class="bi bi-check-circle"></i> Xác nhận thanh toán'; }, 10000);
+        }
+    });
+})();
+</script>
+}

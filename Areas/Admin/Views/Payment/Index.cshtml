@@ -1,0 +1,36 @@
+@model List<Payment>
+@using TourManagement.Web.Models.Enums
+@{ ViewData["Title"] = "Thanh toán"; var booking = ViewBag.Booking as Booking; var paid = (decimal)(ViewBag.PaidAmount ?? 0); var remaining = (decimal)(ViewBag.Remaining ?? 0); }
+<h3>Thanh toán đơn @booking?.BookingCode</h3>
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-3"><strong>Tổng tiền:</strong> @booking?.TotalAmount.ToString("N0") đ</div>
+            <div class="col-md-3 text-success"><strong>Đã thanh toán:</strong> @paid.ToString("N0") đ</div>
+            <div class="col-md-3 text-danger"><strong>Còn lại:</strong> @remaining.ToString("N0") đ</div>
+            <div class="col-md-3 text-end">
+                <a href="/Admin/Payment/Create?bookingId=@booking?.Id" class="btn btn-primary"><i class="bi bi-plus"></i> Thêm thanh toán</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="data-table table-responsive">
+    <table class="table table-hover mb-0">
+        <thead><tr><th>Mã GD</th><th>Phương thức</th><th>Số tiền</th><th>Trạng thái</th><th>Thời gian</th><th>Ghi chú</th><th>Xử lý bởi</th></tr></thead>
+        <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td><code>@p.TransactionCode</code></td>
+                <td>@EnumHelper.GetPaymentMethodName(p.Method)</td>
+                <td class="@(p.Amount >= 0 ? "text-success" : "text-danger")">@p.Amount.ToString("N0") đ</td>
+                <td>@EnumHelper.GetPaymentStatusName(p.Status)</td>
+                <td>@p.PaidAt?.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@p.Note</td>
+                <td>@p.ProcessedBy</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

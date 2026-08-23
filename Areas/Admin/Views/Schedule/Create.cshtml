@@ -1,0 +1,34 @@
+@model ScheduleFormViewModel
+@{ ViewData["Title"] = "Tạo lịch"; var tours = ViewBag.Tours as List<Tour>; }
+<h3>Tạo lịch khởi hành</h3>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <input type="hidden" asp-for="TourId" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-6 mb-3"><label class="form-label">Tour *</label>
+                    <select asp-for="TourId" class="form-select" id="tourSelect">
+                        <option value="">-- Chọn --</option>
+                        @foreach (var t in tours ?? new())
+                        {
+                            <option value="@t.Id">@t.Name (@t.BasePrice.ToString("N0") đ)</option>
+                        }
+                    </select></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Mã lịch *</label><input asp-for="Code" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Ngày khởi hành *</label><input asp-for="StartDate" type="date" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Ngày về *</label><input asp-for="EndDate" type="date" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Giờ tập trung</label><input asp-for="MeetingTime" type="time" class="form-control" /></div>
+                <div class="col-md-12 mb-3"><label class="form-label">Điểm tập trung *</label><input asp-for="MeetingPoint" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Số chỗ tối đa *</label><input asp-for="MaxGuests" type="number" min="1" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Giá (VNĐ) *</label><input asp-for="Price" type="number" class="form-control" /></div>
+                <div class="col-md-4 mb-3"><label class="form-label">Trạng thái</label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="1">OPEN</option><option value="3">CLOSED</option>
+                    </select></div>
+            </div>
+            <button class="btn btn-primary">Lưu</button>
+            <a href="/Admin/Schedule" class="btn btn-link">Hủy</a>
+        </form>
+    </div>
+</div>

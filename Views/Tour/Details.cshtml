@@ -1,0 +1,278 @@
+@model Tour
+@using TourManagement.Web.Models.Enums
+@{
+    ViewData["Title"] = Model.Name;
+    var schedules = ViewBag.Schedules as List<TourSchedule> ?? new List<TourSchedule>();
+    var reviews = ViewBag.Reviews as PagedResult<Review> ?? new PagedResult<Review>();
+    var avgRating = (double)(ViewBag.AvgRating ?? 0.0);
+    var reviewCount = (int)(ViewBag.ReviewCount ?? 0);
+    var itin = Model.Itineraries.OrderBy(i => i.DayNumber).ToList();
+}
+
+<section class="bg-light py-3">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="/"><i class="bi bi-house"></i> Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/Tour">Tour</a></li>
+                <li class="breadcrumb-item active">@Model.Name</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<section class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <h1 class="mb-2 fw-bold">@Model.Name</h1>
+            <div class="d-flex gap-3 align-items-center mb-3 text-muted flex-wrap">
+                <span class="badge bg-primary-subtle text-primary p-2">
+                    <i class="bi bi-geo-alt-fill"></i> @(Model.Destination?.Name)
+                </span>
+                <span><i class="bi bi-clock"></i> @Model.DurationDays ngày @Model.DurationNights đêm</span>
+                <span class="text-warning">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <i class="bi bi-star@(i <= Math.Round(avgRating) ? "-fill" : "")"></i>
+                    }
+                    <span class="text-muted ms-1">(@reviewCount đánh giá)</span>
+                </span>
+            </div>
+
+            <img src="@(Model.Thumbnail ?? "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=900")"
+                 class="img-fluid rounded mb-4 w-100 shadow" style="max-height:450px;object-fit:cover" alt="@Model.Name">
+
+            <ul class="nav nav-pills mb-3 flex-wrap">
+                <li class="nav-item">
+                    <a class="nav-link active" data-bs-toggle="pill" href="#desc">
+                        <i class="bi bi-info-circle"></i> Mô tả
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#itin">
+                        <i class="bi bi-calendar3"></i> Lịch trình
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#include">
+                        <i class="bi bi-check2-square"></i> Dịch vụ
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#policy">
+                        <i class="bi bi-shield-check"></i> Chính sách
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="pill" href="#reviews">
+                        <i class="bi bi-star"></i> Đánh giá (@reviewCount)
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content card p-4 shadow-sm">
+                <div class="tab-pane fade show active" id="desc">
+                    <h4 class="mb-3"><i class="bi bi-info-circle text-primary"></i> Mô tả tour</h4>
+                    <p>@Model.Description</p>
+                </div>
+
+                <div class="tab-pane fade" id="itin">
+                    <h4 class="mb-3"><i class="bi bi-calendar3 text-primary"></i> Lịch trình tour chi tiết</h4>
+                    @if (itin.Any())
+                    {
+                        @foreach (var i in itin)
+                        {
+                            <div class="itinerary-item">
+                                <span class="day-badge">Ngày @i.DayNumber</span>
+                                <h5 class="fw-bold mt-2">@i.Title</h5>
+                                @if (!string.IsNullOrEmpty(i.TimeInfo))
+                                {
+                                    <p class="text-muted small mb-1"><i class="bi bi-clock"></i> @i.TimeInfo</p>
+                                }
+                                @if (!string.IsNullOrEmpty(i.Location))
+                                {
+                                    <p class="mb-1"><i class="bi bi-geo-alt-fill text-danger"></i> <strong>Địa điểm:</strong> @i.Location</p>
+                                }
+                                @if (!string.IsNullOrEmpty(i.Meals))
+                                {
+                                    <p class="mb-1"><i class="bi bi-cup-hot-fill text-warning"></i> <strong>Bữa ăn:</strong> @i.Meals</p>
+                                }
+                                @if (!string.IsNullOrEmpty(i.Hotel))
+                                {
+                                    <p class="mb-1"><i class="bi bi-building-fill text-info"></i> <strong>Khách sạn:</strong> @i.Hotel</p>
+                                }
+                                <p class="mt-2 mb-0">@i.Description</p>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Chưa có lịch trình chi tiết.</p>
+                    }
+                </div>
+
+                <div class="tab-pane fade" id="include">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 bg-success-subtle rounded h-100">
+                                <h5 class="text-success"><i class="bi bi-check-circle-fill"></i> Bao gồm</h5>
+                                <p class="mb-0">@(Model.IncludedServices ?? "Liên hệ để biết chi tiết")</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 bg-danger-subtle rounded h-100">
+                                <h5 class="text-danger"><i class="bi bi-x-circle-fill"></i> Không bao gồm</h5>
+                                <p class="mb-0">@(Model.ExcludedServices ?? "Liên hệ để biết chi tiết")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="policy">
+                    <h4 class="mb-3"><i class="bi bi-shield-check text-primary"></i> Chính sách & điều khoản</h4>
+                    <p>@(Model.Policy ?? "Hủy trước 15 ngày: hoàn 100%. Trước 7-14 ngày: hoàn 70%. Dưới 7 ngày: không hoàn.")</p>
+                </div>
+
+                <div class="tab-pane fade" id="reviews">
+                    <h4 class="mb-3"><i class="bi bi-star-fill text-warning"></i> Đánh giá từ khách hàng</h4>
+                    @if (reviews.Items.Any())
+                    {
+                        @foreach (var r in reviews.Items)
+                        {
+                            <div class="review-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong class="d-block">@r.User?.FullName</strong>
+                                        <small class="text-muted"><i class="bi bi-calendar3"></i> @r.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                    </div>
+                                    <span class="text-warning fs-5">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <i class="bi bi-star@(i <= r.Rating ? "-fill" : "")"></i>
+                                        }
+                                    </span>
+                                </div>
+                                <p class="mb-0">@r.Content</p>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <i class="bi bi-chat-quote"></i>
+                            <h5>Chưa có đánh giá nào</h5>
+                            <p>Hãy là người đầu tiên chia sẻ trải nghiệm của bạn!</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top:80px">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <small class="text-muted d-block">Giá từ</small>
+                        <h3 class="text-danger fw-bold m-0">@Model.BasePrice.ToString("N0") đ</h3>
+                        <small class="text-muted">/ khách</small>
+                    </div>
+                    <hr />
+                    <h5 class="mb-3"><i class="bi bi-calendar-event-fill text-primary"></i> Lịch khởi hành</h5>
+                    @if (schedules.Any())
+                    {
+                        @foreach (var s in schedules.Take(5))
+                        {
+                            var available = s.AvailableSeats;
+                            var soldOut = available <= 0 || s.Status != (int)ScheduleStatus.OPEN;
+                            var percent = s.MaxGuests > 0 ? (int)((double)(s.MaxGuests - available) / s.MaxGuests * 100) : 0;
+                            <div class="schedule-item">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong><i class="bi bi-calendar3"></i> @s.StartDate.ToString("dd/MM/yyyy")</strong>
+                                        <div class="small text-muted">@(s.EndDate.ToString("dd/MM/yyyy"))</div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="text-primary fw-bold">@s.Price.ToString("N0") đ</div>
+                                        <small class="text-muted">/ khách</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="@(soldOut ? "text-danger" : (available <= 3 ? "text-warning" : "text-success"))">
+                                        <i class="bi bi-people-fill"></i> @(available) chỗ trống / @s.MaxGuests
+                                    </small>
+                                    @if (soldOut)
+                                    {
+                                        <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Hết chỗ</span>
+                                    }
+                                    else
+                                    {
+                                        <a href="/Booking/Create?scheduleId=@s.Id" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-bookmark-plus"></i> Đặt ngay
+                                        </a>
+                                    }
+                                </div>
+                                @if (!soldOut && percent > 0)
+                                {
+                                    <div class="progress mt-2" style="height:6px">
+                                        <div class="progress-bar @(percent > 80 ? "bg-danger" : (percent > 50 ? "bg-warning" : "bg-success"))"
+                                             style="width:@percent%"></div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-state py-3">
+                            <i class="bi bi-calendar-x"></i>
+                            <p>Chưa có lịch khởi hành.</p>
+                        </div>
+                    }
+                    <div class="d-grid gap-2 mt-3">
+                        <a href="tel:19006868" class="btn btn-outline-primary">
+                            <i class="bi bi-telephone-fill"></i> Gọi tư vấn 1900 6868
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.itinerary-item {
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    background: #f8fafc;
+    border-left: 4px solid var(--primary);
+}
+.day-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 4px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.review-item {
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+.schedule-item {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--gray-200);
+    transition: all .2s;
+}
+.schedule-item:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow);
+}
+.bg-success-subtle { background-color: rgba(40,167,69,0.1) !important; }
+.bg-danger-subtle { background-color: rgba(220,53,69,0.1) !important; }
+</style>

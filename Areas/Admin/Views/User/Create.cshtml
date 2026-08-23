@@ -1,0 +1,25 @@
+@{ ViewData["Title"] = "Tạo người dùng"; var roles = ViewBag.Roles as List<string>; }
+<h3>Tạo người dùng</h3>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="row">
+                <div class="col-md-6 mb-3"><label class="form-label">Họ tên *</label><input name="fullName" class="form-control" required /></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Email *</label><input name="email" type="email" class="form-control" required /></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Số điện thoại</label><input name="phone" class="form-control" /></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Mật khẩu *</label><input name="password" type="password" class="form-control" required minlength="6" /></div>
+                <div class="col-md-6 mb-3"><label class="form-label">Role *</label>
+                    <select name="role" class="form-select" required>
+                        <option value="">-- Chọn --</option>
+                        @foreach (var r in roles ?? new())
+                        {
+                            <option value="@r">@r</option>
+                        }
+                    </select></div>
+            </div>
+            <button class="btn btn-primary">Tạo</button>
+            <a href="/Admin/User" class="btn btn-link">Hủy</a>
+        </form>
+    </div>
+</div>

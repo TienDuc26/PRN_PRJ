@@ -1,0 +1,28 @@
+@model GuideAssignViewModel
+@{ ViewData["Title"] = "Phân công HDV"; var sch = ViewBag.Schedule as TourSchedule; var guides = ViewBag.Guides as List<Guide>; }
+<h3>Phân công HDV cho lịch @sch?.Code</h3>
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <p><strong>Tour:</strong> @sch?.Tour?.Name</p>
+        <p><strong>Khởi hành:</strong> @sch?.StartDate.ToString("dd/MM/yyyy") - @sch?.EndDate.ToString("dd/MM/yyyy")</p>
+    </div>
+</div>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Assign" method="post">
+            <input type="hidden" asp-for="ScheduleId" />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="mb-3"><label class="form-label">Chọn HDV</label>
+                <select asp-for="GuideId" class="form-select">
+                    <option value="">-- Chọn --</option>
+                    @foreach (var g in guides ?? new())
+                    {
+                        <option value="@g.Id">@g.FullName - @g.Phone - @g.Languages</option>
+                    }
+                </select></div>
+            <div class="mb-3"><label class="form-label">Ghi chú</label><input asp-for="Note" class="form-control" /></div>
+            <button class="btn btn-primary">Phân công</button>
+            <a href="/Admin/Schedule" class="btn btn-link">Hủy</a>
+        </form>
+    </div>
+</div>

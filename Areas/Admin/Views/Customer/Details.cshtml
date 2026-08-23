@@ -1,0 +1,47 @@
+@model ApplicationUser
+@{ ViewData["Title"] = "Khách hàng " + Model.FullName; }
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb"><li class="breadcrumb-item"><a href="/Admin/Customer">Khách hàng</a></li><li class="breadcrumb-item active">@Model.FullName</li></ol>
+</nav>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm text-center p-4">
+            <img src="@(Model.Avatar ?? "https://ui-avatars.com/api/?name="+Model.FullName+"&size=150")" class="rounded-circle mx-auto mb-3" style="width:120px;height:120px">
+            <h4>@Model.FullName</h4>
+            <p class="text-muted">@Model.Email</p>
+            <p>@Model.PhoneNumber</p>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h5>Thông tin</h5>
+                <p><strong>Ngày sinh:</strong> @(Model.DateOfBirth?.ToString("dd/MM/yyyy") ?? "-")</p>
+                <p><strong>Giới tính:</strong> @(Model.Gender == 1 ? "Nam" : Model.Gender == 2 ? "Nữ" : "-")</p>
+                <p><strong>Địa chỉ:</strong> @(Model.Address ?? "-")</p>
+                <p><strong>Ngày đăng ký:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+                <p><strong>Trạng thái:</strong> @(Model.Status == 1 ? "Active" : "Locked")</p>
+            </div>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Lịch sử đặt tour (@Model.Bookings.Count)</h5>
+                <table class="table table-sm">
+                    <thead><tr><th>Mã</th><th>Tour</th><th>Ngày đặt</th><th>Tổng</th><th>Trạng thái</th></tr></thead>
+                    <tbody>
+                    @foreach (var b in Model.Bookings.OrderByDescending(x => x.BookedAt).Take(10))
+                    {
+                        <tr>
+                            <td>@b.BookingCode</td>
+                            <td>@b.Schedule?.Tour?.Name</td>
+                            <td>@b.BookedAt.ToString("dd/MM/yyyy")</td>
+                            <td>@b.TotalAmount.ToString("N0") đ</td>
+                            <td>@b.Status</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
