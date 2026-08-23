@@ -4364,7 +4364,7 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Admin\\AppData\\Local\\Temp\\cursor-sandbox-cache\\cd34fbaf781b717c43020fdfc6cc507c\\nuget": {},
+    "C:\\Users\\Admin\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
@@ -4373,7 +4373,7 @@
       "projectUniqueName": "C:\\Users\\Admin\\Desktop\\ASM1\\PRJ_PRN222\\PRN222-PROJECT\\PRN222-PROJECT.csproj",
       "projectName": "TourManagement.Web",
       "projectPath": "C:\\Users\\Admin\\Desktop\\ASM1\\PRJ_PRN222\\PRN222-PROJECT\\PRN222-PROJECT.csproj",
-      "packagesPath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\cursor-sandbox-cache\\cd34fbaf781b717c43020fdfc6cc507c\\nuget",
+      "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Admin\\Desktop\\ASM1\\PRJ_PRN222\\PRN222-PROJECT\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
