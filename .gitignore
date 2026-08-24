@@ -1,0 +1,49 @@
+## .NET / Visual Studio build artifacts
+bin/
+obj/
+out/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.nuget.props
+*.nuget.targets
+
+## Rider / VS Code
+.idea/
+.vs/
+.vscode/
+*.swp
+
+## OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+## ASP.NET Core
+appsettings.Development.json
+appsettings.Local.json
+*.env
+*.env.local
+
+## Logs
+*.log
+logs/
+
+## Coverage / Test results
+TestResults/
+coverage*.xml
+*.coverage
+
+## Publish
+publish/
+*.pubxml
+*.pubxml.user
+*.publishproj
+PublishProfiles/

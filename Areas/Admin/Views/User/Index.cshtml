@@ -24,7 +24,16 @@
                 <td>@u.Email</td>
                 <td>@u.PhoneNumber</td>
                 <td><span class="badge bg-info">@role</span></td>
-                <td>@(u.Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-danger'>Locked</span>")</td>
+                <td>
+                    @if (u.Status == 1)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Locked</span>
+                    }
+                </td>
                 <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
                 <td>
                     <form asp-action="ChangeRole" asp-route-userId="@u.Id" method="post" class="d-inline">

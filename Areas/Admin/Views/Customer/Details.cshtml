@@ -36,7 +36,7 @@
                             <td>@b.Schedule?.Tour?.Name</td>
                             <td>@b.BookedAt.ToString("dd/MM/yyyy")</td>
                             <td>@b.TotalAmount.ToString("N0") đ</td>
-                            <td>@b.Status</td>
+                            <td><span class="badge @EnumHelper.GetBadgeClass(b.Status, typeof(BookingStatus))">@EnumHelper.GetBookingStatusName(b.Status)</span></td>
                         </tr>
                     }
                     </tbody>

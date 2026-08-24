@@ -22,7 +22,16 @@
                 <td>@g.Email</td>
                 <td>@(g.ExperienceYears ?? 0) năm</td>
                 <td>@g.Languages</td>
-                <td>@(g.Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-secondary'>Inactive</span>")</td>
+                <td>
+                    @if (g.Status == 1)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </td>
                 <td>
                     <a href="/Admin/Guide/Edit/@g.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
                     <a href="/Admin/Guide/Schedule/@g.Id" class="btn btn-sm btn-outline-info"><i class="bi bi-calendar"></i></a>

@@ -31,7 +31,16 @@
                 </td>
                 <td>@(r.Content.Length > 80 ? r.Content.Substring(0, 80) + "..." : r.Content)</td>
                 <td>@r.CreatedAt.ToString("dd/MM/yyyy")</td>
-                <td>@(r.Status == 1 ? "<span class='badge bg-success'>Hiển thị</span>" : "<span class='badge bg-secondary'>Ẩn</span>")</td>
+                <td>
+                    @if (r.Status == 1)
+                    {
+                        <span class="badge bg-success">Hiển thị</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Ẩn</span>
+                    }
+                </td>
                 <td>
                     <form asp-action="ToggleVisibility" asp-route-id="@r.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()

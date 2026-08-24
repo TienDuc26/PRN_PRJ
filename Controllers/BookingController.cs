@@ -9,7 +9,6 @@ using TourManagement.Web.ViewModels;
 
 namespace TourManagement.Web.Controllers;
 
-[Authorize]
 public class BookingController : Controller
 {
     private readonly IBookingService _bookingService;
@@ -18,10 +17,12 @@ public class BookingController : Controller
     private readonly IPromotionService _promoService;
     private readonly IReviewService _reviewService;
     private readonly IPaymentService _paymentService;
+    private readonly IGuestSessionService _guestSession;
     private readonly AppDbContext _db;
 
     public BookingController(IBookingService bookingService, IScheduleService scheduleService, ITourService tourService,
-        IPromotionService promoService, IReviewService reviewService, IPaymentService paymentService, AppDbContext db)
+        IPromotionService promoService, IReviewService reviewService, IPaymentService paymentService,
+        IGuestSessionService guestSession, AppDbContext db)
     {
         _bookingService = bookingService;
         _scheduleService = scheduleService;
@@ -29,11 +30,13 @@ public class BookingController : Controller
         _promoService = promoService;
         _reviewService = reviewService;
         _paymentService = paymentService;
+        _guestSession = guestSession;
         _db = db;
     }
 
     [HttpGet]
-    public async Task<IActionResult> Create(int scheduleId)
+    [AllowAnonymous]
+    public async Task<IActionResult> Create(int scheduleId, int adults = 1, int children = 0, string? promoCode = null)
     {
         var schedule = await _scheduleService.GetByIdAsync(scheduleId);
         if (schedule == null || schedule.Status != (int)ScheduleStatus.OPEN || schedule.StartDate.Date < DateTime.UtcNow.Date)
@@ -43,13 +46,22 @@ public class BookingController : Controller
         }
         var tour = await _tourService.GetTourByIdAsync(schedule.TourId);
         if (tour == null) return NotFound();
-        var model = new BookingCreateViewModel { ScheduleId = scheduleId };
+
+        var model = new BookingCreateViewModel
+        {
+            ScheduleId = scheduleId,
+            Adults = adults,
+            Children = children,
+            PromotionCode = promoCode
+        };
         ViewBag.Schedule = schedule;
         ViewBag.Tour = tour;
+        ViewBag.IsGuest = !(User.Identity?.IsAuthenticated ?? false);
         return View(model);
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    [Authorize]
     public async Task<IActionResult> Create(BookingCreateViewModel model)
     {
         if (!ModelState.IsValid)
@@ -72,6 +84,7 @@ public class BookingController : Controller
         {
             var userId = User.GetUserId();
             var booking = await _bookingService.CreateBookingAsync(userId, model);
+            _guestSession.ClearBookingSelection();
             TempData["Success"] = $"Đặt tour thành công! Mã đơn: {booking.BookingCode}";
             return RedirectToAction(nameof(Details), new { id = booking.Id });
         }
@@ -85,6 +98,8 @@ public class BookingController : Controller
         }
     }
 
+    [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Index(int page = 1, int? status = null)
     {
         var userId = User.GetUserId();
@@ -93,6 +108,8 @@ public class BookingController : Controller
         return View(result);
     }
 
+    [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Details(int id)
     {
         var booking = await _bookingService.GetByIdAsync(id);
@@ -107,6 +124,7 @@ public class BookingController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    [Authorize]
     public async Task<IActionResult> Cancel(int id)
     {
         try
@@ -123,13 +141,72 @@ public class BookingController : Controller
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> CheckPromo(string code, decimal amount)
     {
         var result = await _promoService.ValidateAsync(code, amount);
         return Json(new { success = result.Success, message = result.Message, discount = result.Discount });
     }
 
+    [HttpPost]
+    [AllowAnonymous]
+    public IActionResult SaveGuestSelection([FromBody] GuestBookingSelection selection)
+    {
+        if (selection == null || selection.ScheduleId <= 0 || selection.Adults <= 0)
+            return BadRequest();
+        _guestSession.SaveBookingSelection(
+            selection.TourId, selection.ScheduleId,
+            selection.Adults, selection.Children, selection.PromoCode);
+        return Ok();
+    }
+
     [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> ContinueFromGuest()
+    {
+        var sel = _guestSession.GetBookingSelection();
+        if (sel == null)
+        {
+            TempData["Warning"] = "Phiên đặt tour đã hết hạn. Vui lòng chọn lại tour.";
+            return RedirectToAction("Index", "Tour");
+        }
+
+        var schedule = await _scheduleService.GetByIdAsync(sel.ScheduleId);
+        if (schedule == null || schedule.Status != (int)ScheduleStatus.OPEN || schedule.StartDate.Date < DateTime.UtcNow.Date)
+        {
+            _guestSession.ClearBookingSelection();
+            TempData["Warning"] = "Lịch khởi hành không còn khả dụng. Vui lòng chọn lịch khác.";
+            return RedirectToAction("Details", "Tour", new { id = sel.TourId });
+        }
+        if (schedule.AvailableSeats < (sel.Adults + sel.Children))
+        {
+            _guestSession.ClearBookingSelection();
+            TempData["Warning"] = $"Số chỗ không đủ. Lịch này chỉ còn {schedule.AvailableSeats} chỗ.";
+            return RedirectToAction("Details", "Tour", new { id = sel.TourId });
+        }
+
+        if (!string.IsNullOrWhiteSpace(sel.PromoCode))
+        {
+            var amount = schedule.Price * sel.Adults + (int)(schedule.Price * 0.7m * sel.Children);
+            var promoResult = await _promoService.ValidateAsync(sel.PromoCode, amount);
+            if (!promoResult.Success)
+                sel.PromoCode = null;
+        }
+
+        var promoCodeToPass = sel.PromoCode;
+        _guestSession.ClearBookingSelection();
+
+        return RedirectToAction(nameof(Create), new
+        {
+            scheduleId = sel.ScheduleId,
+            adults = sel.Adults,
+            children = sel.Children,
+            promoCode = promoCodeToPass
+        });
+    }
+
+    [HttpGet]
+    [Authorize]
     public async Task<IActionResult> Pay(int id)
     {
         var booking = await _bookingService.GetByIdAsync(id);
@@ -161,6 +238,7 @@ public class BookingController : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
+    [Authorize]
     public async Task<IActionResult> Pay(PaymentCreateViewModel model)
     {
         var booking = await _bookingService.GetByIdAsync(model.BookingId);
@@ -177,9 +255,7 @@ public class BookingController : Controller
 
         try
         {
-            // Làm tròn số tiền về nguyên (chống lệch do decimal precision)
             var amount = Math.Round(model.Amount, 0, MidpointRounding.AwayFromZero);
-            // Snap lên remaining nếu người dùng nhập gần đúng (lệch ≤ 100đ)
             if (remaining - amount >= 0 && remaining - amount < 100m)
                 amount = remaining;
             await _paymentService.CreatePaymentAsync(model.BookingId, amount, model.Method, model.Note, User.GetFullName());

@@ -14,14 +14,16 @@ public class AccountController : Controller
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ICustomerService _customerService;
     private readonly IAuditLogService _auditLog;
+    private readonly IGuestSessionService _guestSession;
 
     public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,
-        ICustomerService customerService, IAuditLogService auditLog)
+        ICustomerService customerService, IAuditLogService auditLog, IGuestSessionService guestSession)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _customerService = customerService;
         _auditLog = auditLog;
+        _guestSession = guestSession;
     }
 
     [HttpGet]
@@ -39,7 +41,6 @@ public class AccountController : Controller
             return View(model);
         }
 
-        // FR-AUTH: phone trùng nếu đã đăng ký
         if (!string.IsNullOrWhiteSpace(model.Phone))
         {
             var existingPhone = _userManager.Users.FirstOrDefault(u => u.PhoneNumber == model.Phone);
@@ -69,6 +70,13 @@ public class AccountController : Controller
         await _userManager.AddToRoleAsync(user, "CUSTOMER");
         await _signInManager.SignInAsync(user, isPersistent: false);
         await _auditLog.LogAsync(user.Id, "REGISTER", "User", user.Id.ToString(), null, user.Email, HttpContext.Connection.RemoteIpAddress?.ToString());
+
+        // Guest flow: nếu có lựa chọn đặt tour đã lưu trong Session → redirect về ContinueFromGuest
+        if (_guestSession.GetBookingSelection() != null)
+        {
+            return RedirectToAction("ContinueFromGuest", "Booking");
+        }
+
         TempData["Success"] = "Đăng ký thành công! Chào mừng bạn.";
         return RedirectToAction("Index", "Home");
     }
@@ -116,6 +124,10 @@ public class AccountController : Controller
         await _auditLog.LogAsync(user.Id, "LOGIN", "User", user.Id.ToString(), null, user.Email, HttpContext.Connection.RemoteIpAddress?.ToString());
         if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             return Redirect(returnUrl);
+
+        // Guest flow: sau khi đăng nhập thành công, kiểm tra có lựa chọn đặt tour đã lưu trong Session không
+        if (_guestSession.GetBookingSelection() != null)
+            return RedirectToAction("ContinueFromGuest", "Booking");
 
         if (await _userManager.IsInRoleAsync(user, "ADMIN") || await _userManager.IsInRoleAsync(user, "STAFF"))
             return RedirectToAction("Index", "Home", new { area = "Admin" });

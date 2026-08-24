@@ -25,7 +25,16 @@
                 <td>@p.MinOrderValue.ToString("N0") đ</td>
                 <td>@p.UsageCount / @p.UsageLimit</td>
                 <td><small>@p.StartAt.ToString("dd/MM/yy") - @p.EndAt.ToString("dd/MM/yy")</small></td>
-                <td>@(p.Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-secondary'>Inactive</span>")</td>
+                <td>
+                    @if (p.Status == 1)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </td>
                 <td>
                     <a href="/Admin/Promotion/Edit/@p.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
                     <form asp-action="ToggleStatus" asp-route-id="@p.Id" method="post" class="d-inline">

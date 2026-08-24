@@ -57,6 +57,15 @@ public static class EnumHelper
                 _ => "bg-secondary"
             };
         }
+        if (type == typeof(UserStatus) || type == typeof(GuideStatus) ||
+            type == typeof(PromotionStatus) || type == typeof(DestinationStatus))
+        {
+            return status == 1 ? "bg-success" : "bg-danger";
+        }
+        if (type == typeof(ReviewStatus))
+        {
+            return status == 1 ? "bg-success" : "bg-secondary";
+        }
         return "bg-secondary";
     }
 }

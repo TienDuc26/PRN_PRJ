@@ -24,7 +24,16 @@
                 <td>@d.City</td>
                 <td>@d.Country</td>
                 <td>@d.Tours.Count</td>
-                <td>@(d.Status == 1 ? "<span class='badge bg-success'>Active</span>" : "<span class='badge bg-secondary'>Inactive</span>")</td>
+                <td>
+                    @if (d.Status == 1)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </td>
                 <td>
                     <a href="/Admin/Destination/Edit/@d.Id" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
                     <form asp-action="Delete" asp-route-id="@d.Id" method="post" class="d-inline" onsubmit="return confirm('Xóa điểm đến?')">
