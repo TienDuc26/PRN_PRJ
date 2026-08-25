@@ -27,20 +27,17 @@ public class BookingCreateViewModel : IValidatableObject
     {
         var results = new List<ValidationResult>();
 
-        // Validate total participants match
         var expectedTotal = Adults + Children;
         if (Participants.Count != expectedTotal)
         {
             results.Add(new ValidationResult($"Tổng số người tham gia ({Participants.Count}) phải khớp với số lượng đã chọn ({expectedTotal})"));
         }
 
-        // Set index for each participant
         for (int i = 0; i < Participants.Count; i++)
         {
             Participants[i].Index = i + 1;
         }
 
-        // Check duplicate CCCD and Phone within same booking
         var identityNumbers = new List<(string value, int index)>();
         var phoneNumbers = new List<(string value, int index)>();
 
@@ -59,7 +56,6 @@ public class BookingCreateViewModel : IValidatableObject
             }
         }
 
-        // Check duplicate CCCD
         var dupIdentity = identityNumbers.GroupBy(x => x.value)
             .Where(g => g.Count() > 1)
             .SelectMany(g => g)
@@ -71,7 +67,6 @@ public class BookingCreateViewModel : IValidatableObject
             results.Add(new ValidationResult($"CMND/CCCD bị trùng lặp giữa: {indices}"));
         }
 
-        // Check duplicate Phone
         var dupPhone = phoneNumbers.GroupBy(x => x.value)
             .Where(g => g.Count() > 1)
             .SelectMany(g => g)
