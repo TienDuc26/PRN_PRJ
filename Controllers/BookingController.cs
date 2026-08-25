@@ -64,17 +64,15 @@ public class BookingController : Controller
     [Authorize]
     public async Task<IActionResult> Create(BookingCreateViewModel model)
     {
+        // Pass TourStartDate for age validation
+        var schedule = await _scheduleService.GetByIdAsync(model.ScheduleId);
+        if (schedule != null)
+        {
+            model.TourStartDate = schedule.StartDate;
+        }
+
         if (!ModelState.IsValid)
         {
-            var schedule = await _scheduleService.GetByIdAsync(model.ScheduleId);
-            var tour = await _tourService.GetTourByIdAsync(schedule!.TourId);
-            ViewBag.Schedule = schedule; ViewBag.Tour = tour;
-            return View(model);
-        }
-        if (model.Participants.Count != (model.Adults + model.Children))
-        {
-            ModelState.AddModelError("", $"Số người tham gia phải khớp với {model.Adults + model.Children}");
-            var schedule = await _scheduleService.GetByIdAsync(model.ScheduleId);
             var tour = await _tourService.GetTourByIdAsync(schedule!.TourId);
             ViewBag.Schedule = schedule; ViewBag.Tour = tour;
             return View(model);
@@ -91,7 +89,6 @@ public class BookingController : Controller
         catch (Exception ex)
         {
             TempData["Error"] = ex.Message;
-            var schedule = await _scheduleService.GetByIdAsync(model.ScheduleId);
             var tour = await _tourService.GetTourByIdAsync(schedule!.TourId);
             ViewBag.Schedule = schedule; ViewBag.Tour = tour;
             return View(model);

@@ -35,7 +35,6 @@
                 </div>
             </div>
 
-            <!-- Guest notice -->
             @if (isGuest)
             {
                 <div class="alert alert-info mb-3">
@@ -47,17 +46,18 @@
                 </div>
             }
 
-            <form asp-action="Create" method="post" id="bookingForm">
+            <form asp-action="Create" method="post" id="bookingForm" novalidate>
                 <input type="hidden" asp-for="ScheduleId" />
-                <div asp-validation-summary="All" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger" id="formErrorSummary"></div>
 
                 <div class="card shadow-sm mb-3">
                     <div class="card-body">
                         <h5>1. Số lượng khách</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Người lớn</label>
+                                <label class="form-label">Người lớn <span class="text-danger">*</span></label>
                                 <input asp-for="Adults" type="number" min="1" class="form-control" id="adultsInput" value="@Model.Adults" />
+                                <div class="invalid-feedback" id="adultsError"></div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Trẻ em</label>
@@ -98,9 +98,10 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100" id="btnSubmit">
+                <button type="submit" class="btn btn-primary btn-lg w-100" id="btnSubmit" disabled>
                     <i class="bi bi-check-circle"></i> Xác nhận đặt tour
                 </button>
+                <small class="text-muted d-block text-center mt-2" id="submitHint">Vui lòng điền đầy đủ thông tin người tham gia</small>
             </form>
         </div>
 
@@ -155,17 +156,16 @@
 <script>
 (function() {
     var selectedPromo = @Html.Raw(selectedPromo != null ? $"'{selectedPromo.Replace("'", "\\'")}'" : "null");
+    var scheduleStartDate = '@schedule?.StartDate.ToString("yyyy-MM-dd")';
 
-    // Khi Guest submit form → lưu session trước, rồi cho redirect
+    // Guest submit handling
     var form = document.getElementById('bookingForm');
     if (form) {
         form.addEventListener('submit', async function(e) {
             var isGuest = @Html.Raw(isGuest ? "true" : "false");
-            if (!isGuest) return; // Customer → submit bình thường
+            if (!isGuest) return;
 
-            e.preventDefault(); // Chặn submit tạm
-
-            // Lưu lựa chọn vào Session
+            e.preventDefault();
             var adults = parseInt(document.getElementById('adultsInput').value) || 1;
             var children = parseInt(document.getElementById('childrenInput').value) || 0;
             var promoCode = document.getElementById('promoCode').value.trim();
@@ -184,53 +184,336 @@
                 })
             });
 
-            // Hiện modal hướng dẫn đăng nhập
             var modal = new bootstrap.Modal(document.getElementById('guestLoginModal'));
             modal.show();
         });
     }
 
-    // Nếu có promo đã chọn từ URL → tự động apply
+    // Auto-apply promo from URL
     if (selectedPromo) {
         document.getElementById('promoCode').value = selectedPromo;
         setTimeout(function() {
             document.getElementById('applyPromo').click();
         }, 300);
     }
+
+    // Apply promo button
+    document.getElementById('applyPromo').addEventListener('click', async function() {
+        var code = document.getElementById('promoCode').value.trim();
+        var msg = document.getElementById('promoMsg');
+        if (!code) { msg.innerHTML = '<span class="text-danger">Vui lòng nhập mã</span>'; return; }
+        var adults = parseInt(document.getElementById('adultsInput').value) || 1;
+        var children = parseInt(document.getElementById('childrenInput').value) || 0;
+        var price = parseFloat('@schedule?.Price' || 0);
+        var amount = price * adults + price * 0.7 * children;
+        var r = await fetch('/Booking/CheckPromo?code=' + encodeURIComponent(code) + '&amount=' + amount);
+        var d = await r.json();
+        if (d.success) {
+            msg.innerHTML = '<span class="text-success">&#10003; ' + d.message + ' - Giảm: ' + Math.round(d.discount).toLocaleString('vi-VN') + ' đ</span>';
+            document.getElementById('promoCodeHidden').value = code;
+        } else {
+            msg.innerHTML = '<span class="text-danger">&#10007; ' + d.message + '</span>';
+            document.getElementById('promoCodeHidden').value = '';
+        }
+    });
+
+    // Validation patterns
+    var patterns = {
+        fullName: /^[\p{L}\s'-]+$/u,
+        identity: /^(\d{9}|\d{12})$/,
+        phone: /^0[3|5|7|8|9][0-9]{8}$/
+    };
+
+    // Validate single field
+    function validateField(input, type, isAdult) {
+        var value = input.value.trim();
+        var errorDiv = input.nextElementSibling;
+        if (!errorDiv || !errorDiv.classList.contains('invalid-feedback')) {
+            errorDiv = input.parentElement.querySelector('.invalid-feedback');
+        }
+        
+        input.classList.remove('is-valid', 'is-invalid');
+        
+        if (!value) {
+            if (type === 'fullName') {
+                input.classList.add('is-invalid');
+                if (errorDiv) errorDiv.textContent = 'Họ tên là bắt buộc';
+                return false;
+            }
+            if (type === 'dateOfBirth') {
+                input.classList.add('is-invalid');
+                if (errorDiv) errorDiv.textContent = 'Ngày sinh là bắt buộc';
+                return false;
+            }
+            if (type === 'gender') {
+                input.classList.add('is-invalid');
+                if (errorDiv) errorDiv.textContent = 'Vui lòng chọn giới tính';
+                return false;
+            }
+            if (type === 'identity' && isAdult) {
+                input.classList.add('is-invalid');
+                if (errorDiv) errorDiv.textContent = 'CMND/CCCD là bắt buộc cho người lớn';
+                return false;
+            }
+            if (type === 'phone' && isAdult) {
+                input.classList.add('is-invalid');
+                if (errorDiv) errorDiv.textContent = 'Điện thoại là bắt buộc cho người lớn';
+                return false;
+            }
+            return true;
+        }
+
+        var isValid = true;
+        var errorMsg = '';
+
+        switch (type) {
+            case 'fullName':
+                if (!patterns.fullName.test(value)) {
+                    isValid = false;
+                    errorMsg = 'Họ tên không được chứa số hoặc ký tự đặc biệt';
+                } else if (value.replace(/[\s'-]/g, '').length < 2) {
+                    isValid = false;
+                    errorMsg = 'Họ tên phải có ít nhất 2 ký tự';
+                } else if (value.length > 100) {
+                    isValid = false;
+                    errorMsg = 'Họ tên không quá 100 ký tự';
+                }
+                break;
+            case 'dateOfBirth':
+                var dob = new Date(value);
+                var today = new Date();
+                if (dob > today) {
+                    isValid = false;
+                    errorMsg = 'Ngày sinh không được là ngày tương lai';
+                } else if (dob < new Date(today.getFullYear() - 120, today.getMonth(), today.getDate())) {
+                    isValid = false;
+                    errorMsg = 'Ngày sinh không hợp lý (quá 120 năm)';
+                }
+                break;
+            case 'identity':
+                if (isAdult && !value) {
+                    isValid = false;
+                    errorMsg = 'CMND/CCCD là bắt buộc cho người lớn';
+                } else if (value && !patterns.identity.test(value)) {
+                    isValid = false;
+                    errorMsg = 'CMND/CCCD phải là 9 hoặc 12 chữ số';
+                }
+                break;
+            case 'phone':
+                if (isAdult && !value) {
+                    isValid = false;
+                    errorMsg = 'Điện thoại là bắt buộc cho người lớn';
+                } else if (value && !patterns.phone.test(value)) {
+                    isValid = false;
+                    errorMsg = 'Số điện thoại không đúng định dạng (10 số, bắt đầu 03/05/07/08/09)';
+                }
+                break;
+        }
+
+        if (!isValid) {
+            input.classList.add('is-invalid');
+            if (errorDiv) errorDiv.textContent = errorMsg;
+        } else {
+            input.classList.add('is-valid');
+            if (errorDiv) errorDiv.textContent = '';
+        }
+
+        return isValid;
+    }
+
+    // Check all participants for duplicates
+    function checkDuplicates() {
+        var identities = {};
+        var phones = {};
+        var hasDuplicate = false;
+        
+        document.querySelectorAll('.participant-card').forEach(function(card, idx) {
+            var identityInput = card.querySelector('input[name*="IdentityNumber"]');
+            var phoneInput = card.querySelector('input[name*="Phone"]');
+            
+            if (identityInput && identityInput.value.trim()) {
+                var val = identityInput.value.trim();
+                if (identities[val]) {
+                    identities[val].push(idx + 1);
+                    hasDuplicate = true;
+                } else {
+                    identities[val] = [idx + 1];
+                }
+            }
+            
+            if (phoneInput && phoneInput.value.trim()) {
+                var val = phoneInput.value.trim();
+                if (phones[val]) {
+                    phones[val].push(idx + 1);
+                    hasDuplicate = true;
+                } else {
+                    phones[val] = [idx + 1];
+                }
+            }
+        });
+
+        // Show duplicate errors
+        document.querySelectorAll('.participant-card').forEach(function(card, idx) {
+            var identityInput = card.querySelector('input[name*="IdentityNumber"]');
+            var phoneInput = card.querySelector('input[name*="Phone"]');
+            
+            if (identityInput) {
+                var errorDiv = identityInput.nextElementSibling;
+                if (identityInput.value.trim() && identities[identityInput.value.trim()] && identities[identityInput.value.trim()].length > 1) {
+                    identityInput.classList.add('is-invalid');
+                    if (errorDiv) errorDiv.textContent = 'CMND/CCCD trùng với người khác trong đoàn';
+                }
+            }
+            
+            if (phoneInput) {
+                var errorDiv = phoneInput.nextElementSibling;
+                if (phoneInput.value.trim() && phones[phoneInput.value.trim()] && phones[phoneInput.value.trim()].length > 1) {
+                    phoneInput.classList.add('is-invalid');
+                    if (errorDiv) errorDiv.textContent = 'Số điện thoại trùng với người khác trong đoàn';
+                }
+            }
+        });
+
+        return !hasDuplicate;
+    }
+
+    // Check if form is complete and valid
+    function checkFormValidity() {
+        var adults = parseInt(document.getElementById('adultsInput').value) || 0;
+        var children = parseInt(document.getElementById('childrenInput').value) || 0;
+        var total = adults + children;
+        
+        var btnSubmit = document.getElementById('btnSubmit');
+        var submitHint = document.getElementById('submitHint');
+        
+        if (total === 0) {
+            btnSubmit.disabled = true;
+            submitHint.textContent = 'Vui lòng điền đầy đủ thông tin người tham gia';
+            return false;
+        }
+
+        var allValid = true;
+        document.querySelectorAll('.participant-card').forEach(function(card) {
+            var isAdult = card.querySelector('input[name*="IsAdult"]')?.value === 'true';
+            var fullName = card.querySelector('input[name*="FullName"]');
+            var dob = card.querySelector('input[name*="DateOfBirth"]');
+            var gender = card.querySelector('select[name*="Gender"]');
+            var identity = card.querySelector('input[name*="IdentityNumber"]');
+            var phone = card.querySelector('input[name*="Phone"]');
+
+            if (fullName && !validateField(fullName, 'fullName', isAdult)) allValid = false;
+            if (dob && !validateField(dob, 'dateOfBirth', isAdult)) allValid = false;
+            if (gender && !validateField(gender, 'gender', isAdult)) allValid = false;
+            if (identity && !validateField(identity, 'identity', isAdult)) allValid = false;
+            if (phone && !validateField(phone, 'phone', isAdult)) allValid = false;
+        });
+
+        if (checkDuplicates()) {
+            if (allValid) {
+                btnSubmit.disabled = false;
+                submitHint.textContent = '';
+            } else {
+                btnSubmit.disabled = true;
+                submitHint.textContent = 'Vui lòng điền đầy đủ thông tin người tham gia';
+            }
+        } else {
+            btnSubmit.disabled = true;
+            submitHint.textContent = 'CMND/CCCD hoặc số điện thoại bị trùng lặp';
+        }
+
+        return allValid;
+    }
+
+    // Generate participant forms
+    document.getElementById('genParticipants').addEventListener('click', function() {
+        var adults = parseInt(document.getElementById('adultsInput').value) || 0;
+        var children = parseInt(document.getElementById('childrenInput').value) || 0;
+        var total = adults + children;
+        
+        if (total <= 0) { 
+            alert('Vui lòng nhập số khách'); 
+            return; 
+        }
+        
+        if (adults < 1) {
+            alert('Phải có ít nhất 1 người lớn');
+            return;
+        }
+        
+        var list = document.getElementById('participantsList');
+        list.innerHTML = '';
+        
+        for (var i = 0; i < total; i++) {
+            var isAdult = i < adults;
+            var card = document.createElement('div');
+            card.className = 'participant-card border rounded p-3 mb-3';
+            card.innerHTML = 
+                '<div class="d-flex justify-content-between align-items-center mb-3">' +
+                    '<h6 class="mb-0">Người thứ ' + (i+1) + ' ' + (isAdult ? '<span class="badge bg-primary">Người lớn</span>' : '<span class="badge bg-warning text-dark">Trẻ em</span>') + '</h6>' +
+                '</div>' +
+                '<div class="row">' +
+                    '<div class="col-md-6 mb-2">' +
+                        '<label class="form-label small">Họ tên <span class="text-danger">*</span></label>' +
+                        '<input class="form-control" name="Participants[' + i + '].FullName" placeholder="Nhập họ tên đầy đủ" />' +
+                        '<div class="invalid-feedback"></div>' +
+                    '</div>' +
+                    '<div class="col-md-6 mb-2">' +
+                        '<label class="form-label small">Ngày sinh <span class="text-danger">*</span></label>' +
+                        '<input type="date" class="form-control" name="Participants[' + i + '].DateOfBirth" max="' + new Date().toISOString().split('T')[0] + '" />' +
+                        '<div class="invalid-feedback"></div>' +
+                    '</div>' +
+                    '<div class="col-md-4 mb-2">' +
+                        '<label class="form-label small">Giới tính <span class="text-danger">*</span></label>' +
+                        '<select class="form-select" name="Participants[' + i + '].Gender">' +
+                            '<option value="">-- Chọn --</option>' +
+                            '<option value="1">Nam</option>' +
+                            '<option value="2">Nữ</option>' +
+                        '</select>' +
+                        '<div class="invalid-feedback"></div>' +
+                    '</div>' +
+                    '<div class="col-md-4 mb-2">' +
+                        '<label class="form-label small">CMND/CCCD ' + (isAdult ? '<span class="text-danger">*</span>' : '(không bắt buộc)') + '</label>' +
+                        '<input class="form-control" name="Participants[' + i + '].IdentityNumber" placeholder="' + (isAdult ? 'Bắt buộc' : '9 hoặc 12 số') + '" />' +
+                        '<div class="invalid-feedback"></div>' +
+                    '</div>' +
+                    '<div class="col-md-4 mb-2">' +
+                        '<label class="form-label small">Điện thoại ' + (isAdult ? '<span class="text-danger">*</span>' : '(không bắt buộc)') + '</label>' +
+                        '<input class="form-control" name="Participants[' + i + '].Phone" placeholder="0xxx xxx xxx" />' +
+                        '<div class="invalid-feedback"></div>' +
+                    '</div>' +
+                    '<input type="hidden" name="Participants[' + i + '].IsAdult" value="' + (isAdult ? 'true' : 'false') + '" />' +
+                '</div>';
+            list.appendChild(card);
+            
+            // Add validation listeners
+            var inputs = card.querySelectorAll('input, select');
+            inputs.forEach(function(input) {
+                input.addEventListener('blur', function() {
+                    var type = input.name.includes('FullName') ? 'fullName' : 
+                               input.name.includes('DateOfBirth') ? 'dateOfBirth' :
+                               input.name.includes('Gender') ? 'gender' :
+                               input.name.includes('IdentityNumber') ? 'identity' : 'phone';
+                    validateField(input, type, isAdult);
+                    checkFormValidity();
+                });
+                
+                input.addEventListener('change', function() {
+                    if (input.name.includes('IdentityNumber') || input.name.includes('Phone')) {
+                        checkDuplicates();
+                        checkFormValidity();
+                    }
+                });
+            });
+        }
+        
+        document.getElementById('participantsCard').style.display = 'block';
+        document.getElementById('participantsCard').scrollIntoView({ behavior: 'smooth' });
+        checkFormValidity();
+    });
+
+    // Validate on adults/children change
+    document.getElementById('adultsInput').addEventListener('change', checkFormValidity);
+    document.getElementById('childrenInput').addEventListener('change', checkFormValidity);
 })();
-
-document.getElementById('genParticipants').addEventListener('click', function() {
-    var adults = parseInt(document.getElementById('adultsInput').value) || 0;
-    var children = parseInt(document.getElementById('childrenInput').value) || 0;
-    var total = adults + children;
-    if (total <= 0) { alert('Vui lòng nhập số khách'); return; }
-    var list = document.getElementById('participantsList');
-    list.innerHTML = '';
-    for (var i = 0; i < total; i++) {
-        var isAdult = i < adults;
-        list.insertAdjacentHTML('beforeend', '<div class="border rounded p-3 mb-3"><h6 class="mb-3">Người thứ ' + (i+1) + ' ' + (isAdult ? '(Người lớn)' : '(Trẻ em)') + '</h6><div class="row"><div class="col-md-6 mb-2"><label class="form-label small">Họ tên *</label><input class="form-control" name="Participants[' + i + '].FullName" required /></div><div class="col-md-6 mb-2"><label class="form-label small">Ngày sinh</label><input type="date" class="form-control" name="Participants[' + i + '].DateOfBirth" /></div><div class="col-md-4 mb-2"><label class="form-label small">Giới tính</label><select class="form-select" name="Participants[' + i + '].Gender"><option value="1">Nam</option><option value="2">Nữ</option></select></div><div class="col-md-4 mb-2"><label class="form-label small">CMND/CCCD</label><input class="form-control" name="Participants[' + i + '].IdentityNumber" /></div><div class="col-md-4 mb-2"><label class="form-label small">Điện thoại</label><input class="form-control" name="Participants[' + i + '].Phone" /></div><input type="hidden" name="Participants[' + i + '].IsAdult" value="' + (isAdult ? 'true' : 'false') + '" /></div></div>');
-    }
-    document.getElementById('participantsCard').style.display = 'block';
-    document.getElementById('participantsCard').scrollIntoView({ behavior: 'smooth' });
-});
-
-document.getElementById('applyPromo').addEventListener('click', async function() {
-    var code = document.getElementById('promoCode').value.trim();
-    var msg = document.getElementById('promoMsg');
-    if (!code) { msg.innerHTML = '<span class="text-danger">Vui lòng nhập mã</span>'; return; }
-    var adults = parseInt(document.getElementById('adultsInput').value) || 1;
-    var children = parseInt(document.getElementById('childrenInput').value) || 0;
-    var price = parseFloat('@schedule?.Price' || 0);
-    var amount = price * adults + price * 0.7 * children;
-    var r = await fetch('/Booking/CheckPromo?code=' + encodeURIComponent(code) + '&amount=' + amount);
-    var d = await r.json();
-    if (d.success) {
-        msg.innerHTML = '<span class="text-success">&#10003; ' + d.message + ' - Giảm: ' + Math.round(d.discount).toLocaleString('vi-VN') + ' đ</span>';
-        document.getElementById('promoCodeHidden').value = code;
-    } else {
-        msg.innerHTML = '<span class="text-danger">&#10007; ' + d.message + '</span>';
-        document.getElementById('promoCodeHidden').value = '';
-    }
-});
 </script>
 }
