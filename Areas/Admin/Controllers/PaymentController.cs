@@ -69,7 +69,11 @@ public class PaymentController : Controller
     public async Task<IActionResult> Refund(int paymentId, decimal amount, string? note)
     {
         var ok = await _paymentService.RefundAsync(paymentId, amount, note, User.GetFullName());
-        if (ok) TempData["Success"] = "Đã hoàn tiền";
+        if (ok)
+        {
+            await _audit.LogAsync(User.GetUserId(), "REFUND", "Payment", paymentId.ToString(), null, $"{amount}", HttpContext.Connection.RemoteIpAddress?.ToString());
+            TempData["Success"] = "Đã hoàn tiền";
+        }
         else TempData["Error"] = "Không thể hoàn tiền";
         return RedirectToAction("Details", "Booking", new { id = (await _paymentService.GetByIdAsync(paymentId))?.BookingId });
     }

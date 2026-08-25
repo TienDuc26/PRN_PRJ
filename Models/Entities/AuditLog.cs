@@ -16,6 +16,8 @@ public class AuditLog
     public string? NewValue { get; set; }
     [StringLength(50)]
     public string? IpAddress { get; set; }
+    [StringLength(50)]
+    public string? Role { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ApplicationUser? User { get; set; }

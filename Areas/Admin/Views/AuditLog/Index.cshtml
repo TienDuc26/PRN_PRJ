@@ -1,28 +1,448 @@
 @model PagedResult<AuditLog>
-@{ ViewData["Title"] = "Nhật ký hoạt động"; var act = ViewBag.Action as string; }
-<h3>Nhật ký hoạt động</h3>
-<form method="get" class="card p-3 mb-3">
-    <div class="row g-2">
-        <div class="col-md-4"><input type="text" name="action" value="@act" placeholder="Hành động..." class="form-control form-control-sm" /></div>
-        <div class="col-md-2"><button class="btn btn-primary btn-sm">Lọc</button></div>
+@{
+    ViewData["Title"] = "Nhật ký hoạt động";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    
+    var action = ViewBag.Action as string;
+    var role = ViewBag.Role as string;
+    var userKeyword = ViewBag.UserKeyword as string;
+    var fromDate = ViewBag.FromDate as string;
+    var toDate = ViewBag.ToDate as string;
+    var loginOnly = ViewBag.LoginOnly as bool? ?? false;
+    
+    // Map action codes to Vietnamese labels
+    var actionLabels = new Dictionary<string, string>
+    {
+        { "LOGIN_SUCCESS", "Đăng nhập thành công" },
+        { "LOGIN_FAILED", "Đăng nhập thất bại" },
+        { "LOGIN_BLOCKED", "Đăng nhập - Tài khoản bị khóa" },
+        { "LOGIN_LOCKOUT", "Đăng nhập - Bị khóa tạm (sai PW)" },
+        { "LOGOUT", "Đăng xuất" },
+        { "REGISTER", "Đăng ký" },
+        { "CREATE_BOOKING", "Tạo booking" },
+        { "CANCEL_BOOKING", "Hủy booking" },
+        { "CONFIRM_BOOKING", "Xác nhận booking" },
+        { "COMPLETE_BOOKING", "Hoàn thành booking" },
+        { "CREATE_TOUR", "Tạo tour" },
+        { "UPDATE_TOUR", "Sửa tour" },
+        { "DELETE_TOUR", "Xóa tour" },
+        { "CREATE_DESTINATION", "Tạo điểm đến" },
+        { "UPDATE_DESTINATION", "Sửa điểm đến" },
+        { "DELETE_DESTINATION", "Xóa điểm đến" },
+        { "CREATE_PROMOTION", "Tạo khuyến mãi" },
+        { "UPDATE_PROMOTION", "Sửa khuyến mãi" },
+        { "DELETE_PROMOTION", "Xóa khuyến mãi" },
+        { "CREATE_PAYMENT", "Thanh toán" },
+        { "REFUND", "Hoàn tiền" },
+        { "LOCK_USER", "Khóa tài khoản" },
+        { "UNLOCK_USER", "Mở khóa tài khoản" },
+        { "UPDATE_ROLE", "Đổi quyền" }
+    };
+    
+    // Get all unique actions from model for the dropdown + include all known action codes
+    var knownActions = new[] { "LOGIN_SUCCESS", "LOGIN_FAILED", "LOGIN_BLOCKED", "LOGIN_LOCKOUT", "LOGOUT", "REGISTER",
+        "CREATE_BOOKING", "CANCEL_BOOKING", "CONFIRM_BOOKING", "COMPLETE_BOOKING",
+        "CREATE_TOUR", "UPDATE_TOUR", "DELETE_TOUR", "UPDATE_TOUR_PRICE",
+        "CREATE_DESTINATION", "UPDATE_DESTINATION", "DELETE_DESTINATION", "DEACTIVATE_DESTINATION",
+        "CREATE_PROMOTION", "UPDATE_PROMOTION", "DELETE_PROMOTION",
+        "CREATE_PAYMENT", "REFUND",
+        "LOCK_USER", "UNLOCK_USER", "UPDATE_ROLE", "CREATE_USER", "CHANGE_ROLE",
+        "CREATE_GUIDE", "UPDATE_GUIDE", "DELETE_GUIDE", "TOGGLE_GUIDE_STATUS",
+        "ASSIGN_GUIDE", "UNASSIGN_GUIDE",
+        "CREATE_SCHEDULE", "UPDATE_SCHEDULE", "DELETE_SCHEDULE", "CANCEL_SCHEDULE", "CLOSE_SCHEDULE",
+        "DELETE_REVIEW", "TOGGLE_REVIEW_VISIBILITY", "SET_BOOKING_STATUS" };
+    var allActions = Model.Items.Select(x => x.Action).Distinct()
+        .Concat(knownActions)
+        .Distinct()
+        .OrderBy(x => x)
+        .ToList();
+    
+    // Action badge colors
+    var actionColors = new Dictionary<string, string>
+    {
+        { "LOGIN_SUCCESS", "success" },
+        { "LOGIN_FAILED", "danger" },
+        { "LOGIN_BLOCKED", "danger" },
+        { "LOGIN_LOCKOUT", "warning" },
+        { "LOGOUT", "secondary" },
+        { "REGISTER", "info" },
+        { "CREATE_BOOKING", "success" },
+        { "CANCEL_BOOKING", "danger" },
+        { "CONFIRM_BOOKING", "primary" },
+        { "COMPLETE_BOOKING", "success" },
+        { "CREATE_TOUR", "success" },
+        { "UPDATE_TOUR", "primary" },
+        { "DELETE_TOUR", "danger" },
+        { "CREATE_DESTINATION", "success" },
+        { "UPDATE_DESTINATION", "primary" },
+        { "DELETE_DESTINATION", "danger" },
+        { "CREATE_PROMOTION", "success" },
+        { "UPDATE_PROMOTION", "primary" },
+        { "DELETE_PROMOTION", "danger" },
+        { "CREATE_PAYMENT", "success" },
+        { "REFUND", "warning" },
+        { "LOCK_USER", "danger" },
+        { "UNLOCK_USER", "success" },
+        { "UPDATE_ROLE", "info" }
+    };
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">
+            <i class="bi bi-journal-text text-primary"></i> Nhật ký hoạt động
+        </h4>
+        <div>
+            <a asp-action="LoginHistory" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-clock-history"></i> Nhật ký đăng nhập
+            </a>
+        </div>
     </div>
-</form>
-<div class="data-table table-responsive">
-    <table class="table table-hover mb-0">
-        <thead><tr><th>Thời gian</th><th>User</th><th>Hành động</th><th>Entity</th><th>ID</th><th>IP</th><th>Chi tiết</th></tr></thead>
-        <tbody>
-        @foreach (var l in Model.Items)
+    
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link @(loginOnly ? "" : "active")" asp-action="Index">
+                <i class="bi bi-list-ul"></i> Tất cả hoạt động
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(loginOnly == true ? "active" : "")" asp-action="LoginHistory">
+                <i class="bi bi-box-arrow-in-right"></i> Nhật ký đăng nhập
+            </a>
+        </li>
+    </ul>
+
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-action="Index" method="get" id="filterForm">
+                <input type="hidden" name="page" value="1" />
+                <div class="row g-3">
+                    <!-- Date Range -->
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted">Từ ngày</label>
+                        <input type="date" name="fromDate" value="@fromDate" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted">Đến ngày</label>
+                        <input type="date" name="toDate" value="@toDate" class="form-control form-control-sm" />
+                    </div>
+                    
+                    <!-- Role Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">Role</label>
+                        <select name="role" class="form-select form-select-sm">
+                            <option value="">-- Tất cả --</option>
+                            <option value="ADMIN" selected="@(role == "ADMIN")">Admin</option>
+                            <option value="STAFF" selected="@(role == "STAFF")">Staff</option>
+                            <option value="CUSTOMER" selected="@(role == "CUSTOMER")">Customer</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Action Filter -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">Hành động</label>
+                        <select name="action" class="form-select form-select-sm">
+                            <option value="">-- Tất cả --</option>
+                            @foreach (var a in allActions)
+                            {
+                                var label = actionLabels.ContainsKey(a) ? actionLabels[a] : a;
+                                <option value="@a" selected="@(action == a)">@label</option>
+                            }
+                        </select>
+                    </div>
+                    
+                    <!-- User Keyword -->
+                    <div class="col-md-2">
+                        <label class="form-label small text-muted">Tìm user</label>
+                        <input type="text" name="userKeyword" value="@userKeyword" placeholder="Tên hoặc email..." class="form-control form-control-sm" />
+                    </div>
+                    
+                    <!-- Buttons -->
+                    <div class="col-md-12 d-flex gap-2 mt-md-3">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                            <i class="bi bi-search"></i> Lọc
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-arrow-counterclockwise"></i> Đặt lại
+                        </a>
+                        <span class="ms-auto text-muted small align-self-center">
+                            @Model.TotalItems.ToString("N0") kết quả
+                        </span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 140px">Thời gian</th>
+                            <th style="width: 180px">Người dùng</th>
+                            <th style="width: 100px">Role</th>
+                            <th style="width: 180px">Hành động</th>
+                            <th style="width: 120px">Đối tượng</th>
+                            <th style="width: 80px">ID</th>
+                            <th style="width: 100px">IP</th>
+                            <th>Chi tiết</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Items.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    Không có dữ liệu
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var log in Model.Items)
+                        {
+                            var badgeColor = actionColors.ContainsKey(log.Action) ? actionColors[log.Action] : "secondary";
+                            var actionLabel = actionLabels.ContainsKey(log.Action) ? actionLabels[log.Action] : log.Action;
+                            var roleBadgeClass = log.Role switch
+                            {
+                                "ADMIN" => "bg-danger",
+                                "STAFF" => "bg-warning text-dark",
+                                "CUSTOMER" => "bg-info",
+                                _ => "bg-secondary"
+                            };
+                            
+                            <tr class="@(log.Action.Contains("FAILED") || log.Action.Contains("BLOCKED") ? "table-danger" : "")">
+                                <td>
+                                    <small class="text-muted">@log.CreatedAt.ToString("dd/MM/yyyy")</small><br/>
+                                    <span class="small">@log.CreatedAt.ToString("HH:mm:ss")</span>
+                                </td>
+                                <td>
+                                    <div class="fw-medium">@(log.User?.FullName ?? "-")</div>
+                                    <small class="text-muted">@(log.User?.Email ?? "-")</small>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(log.Role))
+                                    {
+                                        <span class="badge @roleBadgeClass">@log.Role</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge bg-@badgeColor">@actionLabel</span>
+                                </td>
+                                <td>
+                                    <span class="small">@log.EntityType</span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(log.EntityId))
+                                    {
+                                        <code class="small">@log.EntityId</code>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                                <td>
+                                    <code class="small">@log.IpAddress</code>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(log.NewValue) || !string.IsNullOrEmpty(log.OldValue))
+                                    {
+                                        <button type="button" class="btn btn-outline-info btn-sm" 
+                                                onclick="showLogDetail('@log.Id', '@Html.Raw(Html.Encode(log.NewValue ?? ""))', '@Html.Raw(Html.Encode(log.OldValue ?? ""))', '@log.Action', '@log.EntityType', '@log.EntityId', '@log.User?.FullName', '@log.IpAddress', '@log.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")')">
+                                            <i class="bi bi-eye"></i> Chi tiết
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">-</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
         {
-            <tr>
-                <td>@l.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
-                <td>@l.User?.FullName</td>
-                <td><span class="badge bg-secondary">@l.Action</span></td>
-                <td>@l.EntityType</td>
-                <td>@l.EntityId</td>
-                <td>@l.IpAddress</td>
-                <td><small>@l.NewValue</small></td>
-            </tr>
+            <div class="card-footer">
+                <nav>
+                    <ul class="pagination justify-content-center mb-0">
+                        @{
+                            var prevDisabled = Model.Page <= 1 ? "disabled" : "";
+                            var nextDisabled = Model.Page >= Model.TotalPages ? "disabled" : "";
+                            
+                            var prevPage = Model.Page - 1;
+                            var nextPage = Model.Page + 1;
+                        }
+                        
+                        <li class="page-item @prevDisabled">
+                            <a class="page-link" href="@Url.Action("Index", "AuditLog", new { area = "Admin", page = prevPage, action, role, userKeyword, fromDate, toDate })">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        
+                        @{
+                            var startPage = Math.Max(1, Model.Page - 2);
+                            var endPage = Math.Min(Model.TotalPages, Model.Page + 2);
+                        }
+                        
+                        @if (startPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", "AuditLog", new { area = "Admin", page = 1, action, role, userKeyword, fromDate, toDate })">1</a>
+                            </li>
+                            @if (startPage > 2)
+                            {
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            }
+                        }
+                        
+                        @for (var i = startPage; i <= endPage; i++)
+                        {
+                            var active = Model.Page == i ? "active" : "";
+                            <li class="page-item @active">
+                                <a class="page-link" href="@Url.Action("Index", "AuditLog", new { area = "Admin", page = i, action, role, userKeyword, fromDate, toDate })">@i</a>
+                            </li>
+                        }
+                        
+                        @if (endPage < Model.TotalPages)
+                        {
+                            @if (endPage < Model.TotalPages - 1)
+                            {
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            }
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", "AuditLog", new { area = "Admin", page = Model.TotalPages, action, role, userKeyword, fromDate, toDate })">@Model.TotalPages</a>
+                            </li>
+                        }
+                        
+                        <li class="page-item @nextDisabled">
+                            <a class="page-link" href="@Url.Action("Index", "AuditLog", new { area = "Admin", page = nextPage, action, role, userKeyword, fromDate, toDate })">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         }
-        </tbody>
-    </table>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function showLogDetail(id, newValue, oldValue, action, entityType, entityId, userName, ipAddress, createdAt) {
+        document.getElementById('detailAction').textContent = action;
+        document.getElementById('detailEntityType').textContent = entityType || '-';
+        document.getElementById('detailEntityId').textContent = entityId || '-';
+        document.getElementById('detailUser').textContent = userName || '-';
+        document.getElementById('detailIp').textContent = ipAddress || '-';
+        document.getElementById('detailTime').textContent = createdAt || '-';
+        
+        var newValueCell = document.getElementById('detailNewValue');
+        var oldValueCell = document.getElementById('detailOldValue');
+        
+        if (newValue && newValue.trim()) {
+            newValueCell.innerHTML = formatJson(newValue);
+        } else {
+            newValueCell.innerHTML = '<span class="text-muted">Không có dữ liệu</span>';
+        }
+        
+        if (oldValue && oldValue.trim()) {
+            oldValueCell.innerHTML = formatJson(oldValue);
+        } else {
+            oldValueCell.innerHTML = '<span class="text-muted">Không có dữ liệu</span>';
+        }
+        
+        var modal = new bootstrap.Modal(document.getElementById('logDetailModal'));
+        modal.show();
+    }
+    
+    function formatJson(str) {
+        try {
+            var obj = JSON.parse(str);
+            return '<pre class="mb-0 small" style="max-height: 300px; overflow: auto;">' + JSON.stringify(obj, null, 2) + '</pre>';
+        } catch (e) {
+            return '<code class="small">' + str + '</code>';
+        }
+    }
+</script>
+}
+
+<!-- Log Detail Modal -->
+<div class="modal fade" id="logDetailModal" tabindex="-1" aria-labelledby="logDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="logDetailModalLabel">
+                    <i class="bi bi-clock-history"></i> Chi tiết nhật ký
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="fw-bold text-muted small">Hành động</label>
+                        <div id="detailAction" class="fw-bold text-primary fs-5">-</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold text-muted small">Thời gian</label>
+                        <div id="detailTime" class="fs-6">-</div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="fw-bold text-muted small">Người thực hiện</label>
+                        <div id="detailUser">-</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fw-bold text-muted small">Đối tượng</label>
+                        <div id="detailEntityType">-</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fw-bold text-muted small">ID</label>
+                        <div id="detailEntityId">-</div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="fw-bold text-muted small">IP</label>
+                        <div><code id="detailIp">-</code></div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="fw-bold text-muted small">Giá trị cũ (Old Value)</label>
+                        <div class="border rounded p-2 bg-light" style="min-height: 60px;">
+                            <div id="detailOldValue" class="text-break">-</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold text-muted small">Giá trị mới (New Value)</label>
+                        <div class="border rounded p-2 bg-light" style="min-height: 60px;">
+                            <div id="detailNewValue" class="text-break">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i> Đóng
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

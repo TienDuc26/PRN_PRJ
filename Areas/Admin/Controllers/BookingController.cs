@@ -48,6 +48,7 @@ public class BookingController : Controller
     public async Task<IActionResult> Complete(int id)
     {
         await _service.CompleteBookingAsync(id);
+        await _audit.LogAsync(User.GetUserId(), "COMPLETE_BOOKING", "Booking", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
         return RedirectToAction(nameof(Details), new { id });
     }
 
@@ -63,6 +64,7 @@ public class BookingController : Controller
     public async Task<IActionResult> SetStatus(int id, int status)
     {
         await _service.UpdateStatusAsync(id, status);
+        await _audit.LogAsync(User.GetUserId(), "SET_BOOKING_STATUS", "Booking", id.ToString(), null, status.ToString(), HttpContext.Connection.RemoteIpAddress?.ToString());
         return RedirectToAction(nameof(Details), new { id });
     }
 }

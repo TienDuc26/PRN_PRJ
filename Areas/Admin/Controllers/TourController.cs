@@ -25,6 +25,8 @@ public class TourController : Microsoft.AspNetCore.Mvc.Controller
         _auditLog = auditLog;
     }
 
+    private string? GetUserRole() => User?.Claims?.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value;
+
     public async Task<IActionResult> Index(TourFilterViewModel filter)
     {
         if (filter.Page < 1) filter.Page = 1;
@@ -72,7 +74,7 @@ public class TourController : Microsoft.AspNetCore.Mvc.Controller
             Thumbnail = await FileUploadHelper.SaveImageAsync(thumbnail, "tours")
         };
         var created = await _tourService.CreateTourAsync(tour);
-        await _auditLog.LogAsync(User.GetUserId(), "CREATE_TOUR", "Tour", created.Id.ToString(), null, created.Name, HttpContext.Connection.RemoteIpAddress?.ToString());
+        await _auditLog.LogAsync(User.GetUserId(), "CREATE_TOUR", "Tour", created.Id.ToString(), null, created.Name, HttpContext.Connection.RemoteIpAddress?.ToString(), GetUserRole());
         TempData["Success"] = "Tạo tour thành công";
         return RedirectToAction(nameof(Index));
     }
@@ -134,7 +136,7 @@ public class TourController : Microsoft.AspNetCore.Mvc.Controller
             tour.Thumbnail = await FileUploadHelper.SaveImageAsync(thumbnail, "tours");
         }
         await _tourService.UpdateTourAsync(tour);
-        await _auditLog.LogAsync(User.GetUserId(), "UPDATE_TOUR", "Tour", model.Id.ToString(), null, model.Name, HttpContext.Connection.RemoteIpAddress?.ToString());
+        await _auditLog.LogAsync(User.GetUserId(), "UPDATE_TOUR", "Tour", model.Id.ToString(), null, model.Name, HttpContext.Connection.RemoteIpAddress?.ToString(), GetUserRole());
         TempData["Success"] = "Cập nhật tour thành công";
         return RedirectToAction(nameof(Index));
     }
@@ -152,7 +154,7 @@ public class TourController : Microsoft.AspNetCore.Mvc.Controller
         {
             TempData["Success"] = "Đã xóa tour";
         }
-        await _auditLog.LogAsync(User.GetUserId(), "DELETE_TOUR", "Tour", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
+        await _auditLog.LogAsync(User.GetUserId(), "DELETE_TOUR", "Tour", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString(), GetUserRole());
         return RedirectToAction(nameof(Index));
     }
 

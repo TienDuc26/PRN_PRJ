@@ -185,7 +185,7 @@ public class AuditLogService : IAuditLogService
     private readonly AppDbContext _db;
     public AuditLogService(AppDbContext db) => _db = db;
 
-    public async Task LogAsync(int? userId, string action, string? entityType, string? entityId, string? oldVal, string? newVal, string? ip)
+    public async Task LogAsync(int? userId, string action, string? entityType, string? entityId, string? oldVal, string? newVal, string? ip, string? role = null)
     {
         _db.AuditLogs.Add(new AuditLog
         {
@@ -196,15 +196,31 @@ public class AuditLogService : IAuditLogService
             OldValue = oldVal,
             NewValue = newVal,
             IpAddress = ip,
+            Role = role,
             CreatedAt = DateTime.UtcNow
         });
         await _db.SaveChangesAsync();
     }
 
-    public async Task<PagedResult<AuditLog>> GetPagedAsync(int page, int pageSize, string? action)
+    public async Task<PagedResult<AuditLog>> GetPagedAsync(int page, int pageSize, string? action, string? role, string? userKeyword, DateTime? fromDate, DateTime? toDate)
     {
         var query = _db.AuditLogs.Include(a => a.User).AsQueryable();
-        if (!string.IsNullOrWhiteSpace(action)) query = query.Where(a => a.Action.Contains(action));
+        
+        if (!string.IsNullOrWhiteSpace(action))
+            query = query.Where(a => a.Action.Contains(action));
+        
+        if (!string.IsNullOrWhiteSpace(role))
+            query = query.Where(a => a.Role == role);
+        
+        if (!string.IsNullOrWhiteSpace(userKeyword))
+            query = query.Where(a => a.User != null && (a.User.FullName != null && a.User.FullName.Contains(userKeyword) || (a.User.Email != null && a.User.Email.Contains(userKeyword))));
+        
+        if (fromDate.HasValue)
+            query = query.Where(a => a.CreatedAt >= fromDate.Value);
+        
+        if (toDate.HasValue)
+            query = query.Where(a => a.CreatedAt <= toDate.Value.AddDays(1));
+        
         var total = await query.CountAsync();
         var items = await query.OrderByDescending(a => a.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
         return new PagedResult<AuditLog> { Items = items, Page = page, PageSize = pageSize, TotalItems = total };

@@ -29,6 +29,6 @@ public class RevenuePoint
 
 public interface IAuditLogService
 {
-    Task LogAsync(int? userId, string action, string? entityType, string? entityId, string? oldVal, string? newVal, string? ip);
-    Task<PagedResult<AuditLog>> GetPagedAsync(int page, int pageSize, string? action);
+    Task LogAsync(int? userId, string action, string? entityType, string? entityId, string? oldVal, string? newVal, string? ip, string? role = null);
+    Task<PagedResult<AuditLog>> GetPagedAsync(int page, int pageSize, string? action, string? role, string? userKeyword, DateTime? fromDate, DateTime? toDate);
 }

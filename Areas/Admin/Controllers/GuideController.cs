@@ -104,7 +104,11 @@ public class GuideController : Controller
     {
         var ok = await _service.DeleteAsync(id);
         if (!ok) TempData["Error"] = "Không thể xóa HDV đã phân công";
-        else TempData["Success"] = "Đã xóa HDV";
+        else
+        {
+            await _audit.LogAsync(User.GetUserId(), "DELETE_GUIDE", "Guide", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
+            TempData["Success"] = "Đã xóa HDV";
+        }
         return RedirectToAction(nameof(Index));
     }
 
@@ -112,6 +116,7 @@ public class GuideController : Controller
     public async Task<IActionResult> ToggleStatus(int id)
     {
         await _service.ToggleStatusAsync(id);
+        await _audit.LogAsync(User.GetUserId(), "TOGGLE_GUIDE_STATUS", "Guide", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
         return RedirectToAction(nameof(Index));
     }
 
@@ -156,6 +161,7 @@ public class GuideController : Controller
     public async Task<IActionResult> Unassign(int assignmentId, int guideId)
     {
         await _service.UnassignAsync(assignmentId);
+        await _audit.LogAsync(User.GetUserId(), "UNASSIGN_GUIDE", "GuideAssignment", assignmentId.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
         return RedirectToAction("Schedule", new { id = guideId });
     }
 }

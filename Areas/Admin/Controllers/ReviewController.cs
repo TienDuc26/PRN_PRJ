@@ -24,6 +24,7 @@ public class ReviewController : Controller
     public async Task<IActionResult> ToggleVisibility(int id)
     {
         await _service.ToggleVisibilityAsync(id);
+        await _audit.LogAsync(User.GetUserId(), "TOGGLE_REVIEW_VISIBILITY", "Review", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
         return RedirectToAction(nameof(Index));
     }
 

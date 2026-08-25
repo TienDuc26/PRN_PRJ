@@ -123,7 +123,11 @@ public class ScheduleController : Controller
     {
         var ok = await _service.DeleteAsync(id);
         if (!ok) TempData["Error"] = "Không thể xóa lịch đã có booking";
-        else TempData["Success"] = "Đã xóa lịch";
+        else
+        {
+            await _audit.LogAsync(User.GetUserId(), "DELETE_SCHEDULE", "Schedule", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
+            TempData["Success"] = "Đã xóa lịch";
+        }
         return RedirectToAction(nameof(Index));
     }
 
@@ -131,6 +135,7 @@ public class ScheduleController : Controller
     public async Task<IActionResult> Cancel(int id)
     {
         await _service.CancelAsync(id);
+        await _audit.LogAsync(User.GetUserId(), "CANCEL_SCHEDULE", "Schedule", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
         return RedirectToAction(nameof(Index));
     }
 
@@ -138,6 +143,7 @@ public class ScheduleController : Controller
     public async Task<IActionResult> Close(int id)
     {
         await _service.CloseAsync(id);
+        await _audit.LogAsync(User.GetUserId(), "CLOSE_SCHEDULE", "Schedule", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
         return RedirectToAction(nameof(Index));
     }
 }

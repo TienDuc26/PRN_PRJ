@@ -85,11 +85,17 @@ public class DestinationController : Controller
         if (!ok)
         {
             var d = await _service.GetByIdAsync(id);
-            if (d != null) { d.Status = 2; await _service.UpdateAsync(d); }
+            if (d != null) 
+            { 
+                d.Status = 2; 
+                await _service.UpdateAsync(d);
+                await _audit.LogAsync(User.GetUserId(), "DEACTIVATE_DESTINATION", "Destination", id.ToString(), "1", "2", HttpContext.Connection.RemoteIpAddress?.ToString());
+            }
             TempData["Success"] = "Điểm đến đã có tour - đã chuyển sang INACTIVE";
         }
         else
         {
+            await _audit.LogAsync(User.GetUserId(), "DELETE_DESTINATION", "Destination", id.ToString(), null, null, HttpContext.Connection.RemoteIpAddress?.ToString());
             TempData["Success"] = "Đã xóa điểm đến";
         }
         return RedirectToAction(nameof(Index));
